@@ -1,0 +1,25 @@
+#!/bin/bash
+CHANGED_ARTICLES=$(git diff --name-only HEAD~1 HEAD 2>/dev/null | grep "src/content/blog/.*\.mdx$")
+if [ -z "$CHANGED_ARTICLES" ]; then exit 0; fi
+FAILED=false
+for f in $CHANGED_ARTICLES; do
+  [ ! -f "$f" ] && continue
+  SLUG=$(basename "$f" .mdx); echo "🔍 Validating: $SLUG"; PASS=true
+  [ $(head -15 "$f" | grep -c 'image:.*hero') -lt 1 ] && echo "  ❌ No hero image" && PASS=false
+  HERO=$(head -15 "$f" | grep 'image:' | sed 's/.*"\(.*\)".*/\1/')
+  [ -n "$HERO" ] && [ ! -f "public${HERO}" ] && echo "  ❌ Hero file missing" && PASS=false
+  for img in $(grep -oE '"/blog/[^"]+\.(png|jpg|jpeg)"' "$f" | tr -d '"' | sort -u); do
+    [ ! -f "public${img}" ] && echo "  ❌ Broken: $img" && PASS=false
+  done
+  [ $(grep -c '<img.*src="/blog/' "$f" 2>/dev/null) -lt 2 ] && echo "  ❌ <2 inline images" && PASS=false
+  WC=$(awk 'BEGIN{c=0}/^---$/{c++;next}c>=2{print}' "$f"|wc -w|tr -d ' ')
+  [ "$WC" -lt 100 ] && WC=$(wc -w < "$f" | tr -d ' ')
+  [ "$WC" -lt 1500 ] && echo "  ❌ Words: $WC (<1500)" && PASS=false
+  EXT=$(grep -oE 'https?://[^)"\s>]+' "$f" 2>/dev/null|grep -v 'thearcofpower\|/blog/\|embed\|\.png\|\.jpg'|sed 's|https\?://\([^/]*\)/.*|\1|'|sort -u|wc -l|tr -d ' ')
+  [ "$EXT" -lt 5 ] && echo "  ❌ Sources: $EXT (<5)" && PASS=false
+  [ $(grep -c '^# ' "$f" 2>/dev/null) -gt 0 ] && echo "  ❌ Dup H1" && PASS=false
+  [ $(grep -c 'SCREENSHOT_NEEDED' "$f" 2>/dev/null) -gt 0 ] && echo "  ❌ Placeholders" && PASS=false
+  [ "$PASS" = true ] && echo "  ✅ PASS" || { echo "  ❌ FAIL"; FAILED=true; }
+done
+[ "$FAILED" = true ] && echo "❌ PUSH BLOCKED" && exit 1
+exit 0

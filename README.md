@@ -35,3 +35,12 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
+
+## Development Setup
+
+After cloning, run:
+```bash
+git config core.hooksPath .githooks
+```
+
+This enables the pre-push validation hook that checks blog articles before pushing.
