@@ -1,0 +1,128 @@
+#!/bin/bash
+# Pre-push hook: validate all changed blog articles before pushing
+CHANGED_ARTICLES=$(git diff --name-only HEAD~1 HEAD 2>/dev/null | grep "src/content/blog/.*\.mdx$")
+if [ -z "$CHANGED_ARTICLES" ]; then exit 0; fi
+
+FAILED=false
+for f in $CHANGED_ARTICLES; do
+  if [ ! -f "$f" ]; then continue; fi
+  SLUG=$(basename "$f" .mdx)
+  echo "🔍 Validating: $SLUG"
+  echo "---"
+  PASS=true
+
+  # 1. Hero image in frontmatter
+  HAS_HERO_FM=$(head -15 "$f" | grep -c 'image:.*hero')
+  if [ "$HAS_HERO_FM" -ge 1 ]; then
+    echo "  ✅ Hero image: referenced in frontmatter"
+  else
+    echo "  ❌ Hero image: missing from frontmatter"
+    PASS=false
+  fi
+
+  # 2. Hero image file exists
+  HERO_PATH=$(head -15 "$f" | grep 'image:' | sed 's/.*"\(.*\)".*/\1/')
+  if [ -n "$HERO_PATH" ] && [ -f "public${HERO_PATH}" ]; then
+    echo "  ✅ Hero image file: exists ($(du -h "public${HERO_PATH}" | awk '{print $1}'))"
+  elif [ -n "$HERO_PATH" ]; then
+    echo "  ❌ Hero image file: MISSING at public${HERO_PATH}"
+    PASS=false
+  fi
+
+  # 3. No broken image references
+  BROKEN=0
+  for img in $(grep -oE '"/blog/[^"]+\.(png|jpg|jpeg)"' "$f" | tr -d '"' | sort -u); do
+    if [ ! -f "public${img}" ]; then
+      echo "  ❌ Broken image: $img"
+      BROKEN=$((BROKEN+1))
+    fi
+  done
+  if [ "$BROKEN" -eq 0 ]; then
+    echo "  ✅ All image references resolve"
+  else
+    PASS=false
+  fi
+
+  # 4. Inline images (screenshots or generated) — at least 2
+  IMG_COUNT=$(grep -c '<img.*src="/blog/' "$f" 2>/dev/null)
+  if [ "$IMG_COUNT" -ge 2 ]; then
+    echo "  ✅ Inline images: $IMG_COUNT (≥2 required)"
+  else
+    echo "  ❌ Inline images: $IMG_COUNT (≥2 required)"
+    PASS=false
+  fi
+
+  # 5. Word count (≥1500)
+  WORD_COUNT=$(awk 'BEGIN{c=0} /^---$/{c++;next} c>=2{print}' "$f" | wc -w | tr -d ' ')
+  if [ "$WORD_COUNT" -lt 100 ]; then WORD_COUNT=$(wc -w < "$f" | tr -d ' '); fi
+  if [ "$WORD_COUNT" -ge 1500 ]; then
+    echo "  ✅ Word count: $WORD_COUNT (≥1500)"
+  else
+    echo "  ❌ Word count: $WORD_COUNT (≥1500 required)"
+    PASS=false
+  fi
+
+  # 6. Title ≤60 chars
+  TITLE=$(grep '^title:' "$f" | head -1 | sed 's/title: *"//' | sed 's/"$//')
+  TITLE_LEN=${#TITLE}
+  if [ "$TITLE_LEN" -le 60 ] && [ "$TITLE_LEN" -gt 0 ]; then
+    echo "  ✅ Title: $TITLE_LEN chars (≤60)"
+  elif [ "$TITLE_LEN" -gt 60 ]; then
+    echo "  ❌ Title: $TITLE_LEN chars (must be ≤60)"
+    PASS=false
+  fi
+
+  # 7. Description ≤160 chars
+  DESC=$(grep '^description:' "$f" | head -1 | sed 's/description: *"//' | sed 's/"$//')
+  DESC_LEN=${#DESC}
+  if [ "$DESC_LEN" -le 160 ] && [ "$DESC_LEN" -gt 0 ]; then
+    echo "  ✅ Description: $DESC_LEN chars (≤160)"
+  elif [ "$DESC_LEN" -gt 160 ]; then
+    echo "  ❌ Description: $DESC_LEN chars (must be ≤160)"
+    PASS=false
+  fi
+
+  # 8. External sources (≥5 unique domains)
+  EXT_SOURCES=$(grep -oE 'https?://[^)"\s>]+' "$f" 2>/dev/null | \
+    grep -v 'thearcofpower\.com\|/blog/\|youtube\.com/embed\|\.png\|\.jpg' | \
+    sed 's|https\?://\([^/]*\)/.*|\1|' | sort -u | wc -l | tr -d ' ')
+  if [ "$EXT_SOURCES" -ge 5 ]; then
+    echo "  ✅ External sources: $EXT_SOURCES unique domains (≥5)"
+  else
+    echo "  ❌ External sources: $EXT_SOURCES unique domains (≥5 required)"
+    PASS=false
+  fi
+
+  # 9. No unfilled screenshot placeholders
+  PLACEHOLDERS=$(grep -c 'SCREENSHOT_NEEDED' "$f" 2>/dev/null)
+  if [ "$PLACEHOLDERS" -gt 0 ]; then
+    echo "  ❌ Unfilled screenshot placeholders: $PLACEHOLDERS"
+    PASS=false
+  else
+    echo "  ✅ No unfilled placeholders"
+  fi
+
+  # 10. No duplicate H1 (template renders title from frontmatter)
+  H1_COUNT=$(grep -c '^# ' "$f" 2>/dev/null)
+  if [ "$H1_COUNT" -gt 0 ]; then
+    echo "  ❌ Duplicate H1 found — remove '# Title' from body (template renders from frontmatter)"
+    PASS=false
+  else
+    echo "  ✅ No duplicate H1"
+  fi
+
+  echo "---"
+  if [ "$PASS" = true ]; then
+    echo "✅ PASS — $SLUG"
+  else
+    echo "❌ FAIL — $SLUG"
+    FAILED=true
+  fi
+  echo ""
+done
+
+if [ "$FAILED" = true ]; then
+  echo "❌ PUSH BLOCKED: Articles failed validation"
+  exit 1
+fi
+exit 0
