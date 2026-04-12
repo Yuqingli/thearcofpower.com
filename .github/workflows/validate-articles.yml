@@ -18,78 +18,168 @@ jobs:
         id: changed
         run: |
           ARTICLES=$(git diff --name-only HEAD~1 HEAD | grep 'src/content/blog/.*\.mdx$' || true)
-          echo "articles=$ARTICLES" >> $GITHUB_OUTPUT
-          echo "Found: $ARTICLES"
+          if [ -z "$ARTICLES" ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            echo "No blog articles changed"
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+            # Write to file to handle newlines
+            echo "$ARTICLES" > /tmp/changed_articles.txt
+            echo "Found articles:"
+            cat /tmp/changed_articles.txt
+          fi
 
       - name: Validate articles
-        if: steps.changed.outputs.articles != ''
+        if: steps.changed.outputs.skip != 'true'
         run: |
           FAILED=false
-          for f in ${{ steps.changed.outputs.articles }}; do
+          while IFS= read -r f; do
+            [ -z "$f" ] && continue
             [ ! -f "$f" ] && continue
             SLUG=$(basename "$f" .mdx)
+            echo ""
             echo "🔍 Validating: $SLUG"
+            echo "---"
             PASS=true
 
-            # Hero image in frontmatter
-            if ! head -15 "$f" | grep -q 'image:.*hero'; then
-              echo "  ❌ No hero image in frontmatter"
+            # 1. Multimedia count (images, iframes, callouts, embeds) >= 5
+            MEDIA_COUNT=$(grep -c '<img\|<iframe\|<Callout\|<YouTube\|{% youtube' "$f" 2>/dev/null || echo 0)
+            if [ "$MEDIA_COUNT" -ge 5 ]; then
+              echo "  ✅ Multimedia: $MEDIA_COUNT elements (≥5)"
+            else
+              echo "  ❌ Multimedia: $MEDIA_COUNT elements (≥5 required)"
               PASS=false
             fi
 
-            # Hero image file exists
-            HERO=$(head -15 "$f" | grep 'image:' | sed 's/.*"\(.*\)".*/\1/')
-            if [ -n "$HERO" ] && [ ! -f "public${HERO}" ]; then
-              echo "  ❌ Hero image file missing: public${HERO}"
-              PASS=false
-            fi
-
-            # Broken image references
-            for img in $(grep -oE '"/blog/[^"]+\.(png|jpg|jpeg)"' "$f" | tr -d '"' | sort -u); do
-              if [ ! -f "public${img}" ]; then
-                echo "  ❌ Broken image: $img"
-                PASS=false
-              fi
-            done
-
-            # Inline images >= 2
-            IMG_COUNT=$(grep -c '<img.*src="/blog/' "$f" 2>/dev/null || echo 0)
-            if [ "$IMG_COUNT" -lt 2 ]; then
-              echo "  ❌ Only $IMG_COUNT inline images (≥2 required)"
-              PASS=false
-            fi
-
-            # Word count >= 1500
+            # 2. Word count >= 1500
             WC=$(awk 'BEGIN{c=0}/^---$/{c++;next}c>=2{print}' "$f" | wc -w | tr -d ' ')
             [ "$WC" -lt 100 ] && WC=$(wc -w < "$f" | tr -d ' ')
-            if [ "$WC" -lt 1500 ]; then
+            if [ "$WC" -ge 1500 ]; then
+              echo "  ✅ Word count: $WC (≥1500)"
+            else
               echo "  ❌ Word count: $WC (≥1500 required)"
               PASS=false
             fi
 
-            # External sources >= 5
-            EXT=$(grep -oE 'https?://[^)"\s>]+' "$f" 2>/dev/null | grep -v 'computeleap\.com\|/blog/\|youtube\.com/embed\|\.png\|\.jpg' | sed 's|https\?://\([^/]*\)/.*|\1|' | sort -u | wc -l | tr -d ' ')
-            if [ "$EXT" -lt 5 ]; then
-              echo "  ❌ Only $EXT external sources (≥5 required)"
+            # 3. Alt text on images
+            IMG_COUNT=$(grep -c '<img ' "$f" 2>/dev/null || echo 0)
+            IMG_NO_ALT=$(grep '<img ' "$f" 2>/dev/null | grep -cv 'alt=' 2>/dev/null || echo 0)
+            if [ "$IMG_COUNT" -gt 0 ] && [ "$IMG_NO_ALT" -gt 0 ]; then
+              echo "  ❌ Images missing alt text: $IMG_NO_ALT of $IMG_COUNT"
+              PASS=false
+            else
+              echo "  ✅ All images have alt text ($IMG_COUNT images)"
+            fi
+
+            # 4a. Title <= 60 chars
+            TITLE=$(grep '^title:' "$f" | head -1 | sed 's/title: *"//' | sed 's/"$//')
+            TITLE_LEN=${#TITLE}
+            if [ "$TITLE_LEN" -le 60 ] && [ "$TITLE_LEN" -gt 0 ]; then
+              echo "  ✅ Title: $TITLE_LEN chars (≤60)"
+            elif [ "$TITLE_LEN" -gt 60 ]; then
+              echo "  ❌ Title: $TITLE_LEN chars (must be ≤60 — Google truncates)"
+              PASS=false
+            else
+              echo "  ⚠️  Title: missing or empty"
+            fi
+
+            # 4b. Description <= 160 chars
+            DESC=$(grep '^description:' "$f" | head -1 | sed 's/description: *"//' | sed 's/"$//')
+            DESC_LEN=${#DESC}
+            if [ "$DESC_LEN" -le 160 ] && [ "$DESC_LEN" -gt 0 ]; then
+              echo "  ✅ Description: $DESC_LEN chars (≤160)"
+            elif [ "$DESC_LEN" -gt 160 ]; then
+              echo "  ❌ Description: $DESC_LEN chars (must be ≤160)"
+              PASS=false
+            else
+              echo "  ⚠️  Description: missing or empty"
+            fi
+
+            # 5. Internal links
+            INTERNAL_LINKS=$(grep -c '/blog/\|thearcofpower.com' "$f" 2>/dev/null || echo 0)
+            if [ "$INTERNAL_LINKS" -ge 1 ]; then
+              echo "  ✅ Internal links: $INTERNAL_LINKS found"
+            else
+              echo "  ⚠️  No internal links found (recommended ≥1)"
+            fi
+
+            # 6. Hero image in frontmatter + file exists
+            HAS_HERO_FM=$(head -15 "$f" | grep -c 'image:' || echo 0)
+            if [ "$HAS_HERO_FM" -ge 1 ]; then
+              HERO_PATH=$(head -15 "$f" | grep 'image:' | sed 's/.*"\(.*\)".*/\1/')
+              if [ -n "$HERO_PATH" ] && [ -f "public${HERO_PATH}" ]; then
+                echo "  ✅ Hero image: present + file exists"
+              else
+                echo "  ❌ Hero image: referenced but file MISSING at public${HERO_PATH}"
+                PASS=false
+              fi
+            else
+              echo "  ❌ Hero image: not in frontmatter"
               PASS=false
             fi
 
-            # No duplicate H1
-            H1=$(grep -c '^# ' "$f" 2>/dev/null || echo 0)
-            if [ "$H1" -gt 0 ]; then
-              echo "  ⚠️  H1 in body — check if template renders from frontmatter"
+            # 7. Social proof (screenshots or social source links) >= 4
+            SOCIAL_PROOF_IMGS=$(grep -oE '/blog/(tweet-|hn-|reddit-|screenshot-|substack-)[^)"]+\.(png|jpg)' "$f" 2>/dev/null | sort -u | wc -l | tr -d ' ')
+            SOCIAL_LINKS=$(grep -c 'x\.com/\|news\.ycombinator\|reddit\.com/r/\|substack\.com' "$f" 2>/dev/null || echo 0)
+            SOCIAL_TOTAL=$((SOCIAL_PROOF_IMGS + SOCIAL_LINKS))
+            if [ "$SOCIAL_TOTAL" -ge 4 ]; then
+              echo "  ✅ Social proof: $SOCIAL_PROOF_IMGS screenshots + $SOCIAL_LINKS links = $SOCIAL_TOTAL (≥4)"
+            else
+              echo "  ❌ Social proof: $SOCIAL_TOTAL total (≥4 required)"
+              PASS=false
             fi
 
-            if [ "$PASS" = true ]; then
-              echo "  ✅ PASS"
+            # 8. No broken image references
+            BROKEN=0
+            for img in $(grep -oE '"/blog/[^"]+\.(png|jpg|jpeg)"' "$f" 2>/dev/null | tr -d '"' | sort -u); do
+              if [ ! -f "public${img}" ]; then
+                echo "  ❌ Broken image: $img"
+                BROKEN=$((BROKEN+1))
+              fi
+            done
+            [ "$BROKEN" -eq 0 ] && echo "  ✅ All image references resolve"
+            [ "$BROKEN" -gt 0 ] && PASS=false
+
+            # 9. External sources >= 5 unique domains
+            EXT=$(grep -oE 'https?://[^)"\s>]+' "$f" 2>/dev/null | grep -v 'computeleap\.com\|/blog/\|youtube\.com/embed\|\.png\|\.jpg' | sed 's|https\?://\([^/]*\)/.*|\1|' | sort -u | wc -l | tr -d ' ')
+            if [ "$EXT" -ge 5 ]; then
+              echo "  ✅ External sources: $EXT unique domains (≥5)"
             else
-              echo "  ❌ FAIL"
+              echo "  ❌ External sources: $EXT unique domains (≥5 required)"
+              PASS=false
+            fi
+
+            # 10. No unfilled screenshot placeholders
+            PH=$(grep -c 'SCREENSHOT_NEEDED' "$f" 2>/dev/null || echo 0)
+            if [ "$PH" -gt 0 ]; then
+              echo "  ❌ Unfilled screenshot placeholders: $PH"
+              PASS=false
+            else
+              echo "  ✅ No unfilled placeholders"
+            fi
+
+            # 11. Primary source in opening section
+            FIRST=$(sed '1,/^---$/d' "$f" | head -30)
+            PRIMARY=$(echo "$FIRST" | grep -c 'https\?://[^)"\s]*' 2>/dev/null || echo 0)
+            if [ "$PRIMARY" -ge 1 ]; then
+              echo "  ✅ Primary source: linked in opening section"
+            else
+              echo "  ⚠️  No external link in first 30 lines"
+            fi
+
+            echo "---"
+            if [ "$PASS" = true ]; then
+              echo "✅ PASS — $SLUG"
+            else
+              echo "❌ FAIL — $SLUG"
               FAILED=true
             fi
-          done
+          done < /tmp/changed_articles.txt
 
+          echo ""
           if [ "$FAILED" = true ]; then
-            echo ""
-            echo "❌ VALIDATION FAILED — articles missing required elements"
+            echo "❌ VALIDATION FAILED — fix the issues above"
             exit 1
+          else
+            echo "✅ All articles passed validation"
           fi
