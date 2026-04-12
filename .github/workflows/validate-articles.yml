@@ -1,0 +1,95 @@
+name: Validate Blog Articles
+
+on:
+  push:
+    paths:
+      - 'src/content/blog/**'
+      - 'public/blog/**'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Find changed articles
+        id: changed
+        run: |
+          ARTICLES=$(git diff --name-only HEAD~1 HEAD | grep 'src/content/blog/.*\.mdx$' || true)
+          echo "articles=$ARTICLES" >> $GITHUB_OUTPUT
+          echo "Found: $ARTICLES"
+
+      - name: Validate articles
+        if: steps.changed.outputs.articles != ''
+        run: |
+          FAILED=false
+          for f in ${{ steps.changed.outputs.articles }}; do
+            [ ! -f "$f" ] && continue
+            SLUG=$(basename "$f" .mdx)
+            echo "🔍 Validating: $SLUG"
+            PASS=true
+
+            # Hero image in frontmatter
+            if ! head -15 "$f" | grep -q 'image:.*hero'; then
+              echo "  ❌ No hero image in frontmatter"
+              PASS=false
+            fi
+
+            # Hero image file exists
+            HERO=$(head -15 "$f" | grep 'image:' | sed 's/.*"\(.*\)".*/\1/')
+            if [ -n "$HERO" ] && [ ! -f "public${HERO}" ]; then
+              echo "  ❌ Hero image file missing: public${HERO}"
+              PASS=false
+            fi
+
+            # Broken image references
+            for img in $(grep -oE '"/blog/[^"]+\.(png|jpg|jpeg)"' "$f" | tr -d '"' | sort -u); do
+              if [ ! -f "public${img}" ]; then
+                echo "  ❌ Broken image: $img"
+                PASS=false
+              fi
+            done
+
+            # Inline images >= 2
+            IMG_COUNT=$(grep -c '<img.*src="/blog/' "$f" 2>/dev/null || echo 0)
+            if [ "$IMG_COUNT" -lt 2 ]; then
+              echo "  ❌ Only $IMG_COUNT inline images (≥2 required)"
+              PASS=false
+            fi
+
+            # Word count >= 1500
+            WC=$(awk 'BEGIN{c=0}/^---$/{c++;next}c>=2{print}' "$f" | wc -w | tr -d ' ')
+            [ "$WC" -lt 100 ] && WC=$(wc -w < "$f" | tr -d ' ')
+            if [ "$WC" -lt 1500 ]; then
+              echo "  ❌ Word count: $WC (≥1500 required)"
+              PASS=false
+            fi
+
+            # External sources >= 5
+            EXT=$(grep -oE 'https?://[^)"\s>]+' "$f" 2>/dev/null | grep -v 'computeleap\.com\|/blog/\|youtube\.com/embed\|\.png\|\.jpg' | sed 's|https\?://\([^/]*\)/.*|\1|' | sort -u | wc -l | tr -d ' ')
+            if [ "$EXT" -lt 5 ]; then
+              echo "  ❌ Only $EXT external sources (≥5 required)"
+              PASS=false
+            fi
+
+            # No duplicate H1
+            H1=$(grep -c '^# ' "$f" 2>/dev/null || echo 0)
+            if [ "$H1" -gt 0 ]; then
+              echo "  ⚠️  H1 in body — check if template renders from frontmatter"
+            fi
+
+            if [ "$PASS" = true ]; then
+              echo "  ✅ PASS"
+            else
+              echo "  ❌ FAIL"
+              FAILED=true
+            fi
+          done
+
+          if [ "$FAILED" = true ]; then
+            echo ""
+            echo "❌ VALIDATION FAILED — articles missing required elements"
+            exit 1
+          fi
