@@ -8,6 +8,7 @@ import { CATEGORIES, AUTHORS, SITE_URL } from "@/lib/constants";
 import { formatDate } from "@/lib/utils";
 import { ArticleCard } from "@/components/ArticleCard";
 import { Callout } from "@/components/Callout";
+import { NewsletterSignup } from "@/components/NewsletterSignup";
 
 const mdxComponents = {
   Callout,
@@ -194,6 +195,11 @@ export default function BlogPostPage({ params }: Props) {
               </p>
             </div>
           </div>
+        </div>
+
+        {/* Newsletter Signup */}
+        <div className="mt-12">
+          <NewsletterSignup />
         </div>
 
         {/* Related Articles */}

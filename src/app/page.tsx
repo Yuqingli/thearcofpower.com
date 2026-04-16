@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getAllPosts } from "@/lib/blog";
 import { ArticleCard } from "@/components/ArticleCard";
+import { NewsletterSignup } from "@/components/NewsletterSignup";
 
 export default function HomePage() {
   const posts = getAllPosts();
@@ -108,6 +109,13 @@ export default function HomePage() {
             <p className="text-gray-500">Analysis articles coming soon.</p>
           </div>
         )}
+      </section>
+
+      {/* Newsletter Section */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
+        <div className="max-w-xl mx-auto">
+          <NewsletterSignup />
+        </div>
       </section>
 
       {/* About Section */}
