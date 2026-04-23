@@ -9,6 +9,7 @@ import { formatDate } from "@/lib/utils";
 import { ArticleCard } from "@/components/ArticleCard";
 import { Callout } from "@/components/Callout";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
+import { ShareButtons } from "@/components/ShareButtons";
 
 const mdxComponents = {
   Callout,
@@ -172,6 +173,11 @@ export default function BlogPostPage({ params }: Props) {
             </div>
           </div>
         </header>
+
+        {/* Share Buttons */}
+        <div className="mb-8 pb-8 border-b border-dark-700/50">
+          <ShareButtons url={canonicalUrl} title={post.title} />
+        </div>
 
         {/* Article Content */}
         <div className="prose prose-lg prose-invert max-w-none prose-headings:font-serif prose-a:text-gold-400 hover:prose-a:text-gold-300 prose-blockquote:border-gold-500 prose-strong:text-gray-100">
