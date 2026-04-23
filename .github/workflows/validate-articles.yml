@@ -140,6 +140,24 @@ jobs:
             [ "$BROKEN" -eq 0 ] && echo "  ✅ All image references resolve"
             [ "$BROKEN" -gt 0 ] && PASS=false
 
+            # 8b. Blank/blocked social proof screenshots (<20KB = blank page, login
+            # wall, or capture that fired before JS loaded). Hard fail.
+            BLOCKED=""
+            for img in $(grep -oE '"/blog/(tweet-|hn-|reddit-|hackernews-)[^"]+\.(png|jpg)"' "$f" 2>/dev/null | tr -d '"' | sort -u); do
+              if [ -f "public${img}" ]; then
+                SZ=$(stat -c%s "public${img}" 2>/dev/null || stat -f%z "public${img}" 2>/dev/null)
+                if [ -n "$SZ" ] && [ "$SZ" -lt 20000 ]; then
+                  BLOCKED="$BLOCKED $(basename "${img}"):${SZ}B"
+                fi
+              fi
+            done
+            if [ -n "$BLOCKED" ]; then
+              echo "  ❌ Blank/blocked social proof screenshots (<20KB):$BLOCKED — recapture"
+              PASS=false
+            else
+              echo "  ✅ Social proof screenshots all look substantive"
+            fi
+
             # 9. External sources >= 5 unique domains
             EXT=$(grep -oE 'https?://[^)"\s>]+' "$f" 2>/dev/null | grep -v 'computeleap\.com\|/blog/\|youtube\.com/embed\|\.png\|\.jpg' | sed 's|https\?://\([^/]*\)/.*|\1|' | sort -u | wc -l | tr -d ' ')
             if [ "$EXT" -ge 5 ]; then
