@@ -32,7 +32,7 @@ for f in $CHANGED_ARTICLES; do
   fi
 
   echo "🔍 Validating: $SLUG"
-  RESULT=$("$VALIDATE" "$f" 2>&1)
+  RESULT=$("$VALIDATE" "$(git rev-parse --show-toplevel)/$f" 2>&1)
   if echo "$RESULT" | grep -q "❌ FAIL"; then
     echo "$RESULT"
     echo ""
