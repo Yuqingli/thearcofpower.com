@@ -26,6 +26,15 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = getPostBySlug(params.slug);
   if (!post) return {};
+  // Resolve OG image: per-post hero image first, fall back to site default PNG.
+  // SVG defaults are not honored by most social platforms (X, LinkedIn, FB), so
+  // we always emit a 1200x630 PNG with explicit dimensions and alt text.
+  const ogImageUrl = post.image
+    ? `${SITE_URL}${post.image}`
+    : `${SITE_URL}/og-default.png`;
+  const ogImageAlt = post.image
+    ? post.title
+    : "The Arc of Power — Geopolitics. Power. Consequence.";
   return {
     title: post.title,
     description: post.description,
@@ -40,13 +49,29 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           "The Arc of Power",
       ],
       url: `${SITE_URL}/blog/${post.slug}`,
-      ...(post.image && { images: [{ url: `${SITE_URL}${post.image}` }] }),
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: ogImageAlt,
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
       description: post.description,
-      ...(post.image && { images: [`${SITE_URL}${post.image}`] }),
+      creator: "@thearcofpower",
+      site: "@thearcofpower",
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: ogImageAlt,
+        },
+      ],
     },
     alternates: {
       canonical: `${SITE_URL}/blog/${post.slug}`,
