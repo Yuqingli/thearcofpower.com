@@ -1,25 +1,43 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { PostMeta } from "@/lib/blog";
 import { CATEGORIES, CategorySlug } from "@/lib/constants";
 import { ArticleCard } from "./ArticleCard";
+
+const PAGE_SIZE = 12;
 
 export function BlogSearch({ posts }: { posts: PostMeta[] }) {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState<CategorySlug | "all">(
     "all"
   );
+  const [page, setPage] = useState(1);
 
-  const filteredPosts = posts.filter((post) => {
-    const matchesSearch =
-      search === "" ||
-      post.title.toLowerCase().includes(search.toLowerCase()) ||
-      post.description.toLowerCase().includes(search.toLowerCase());
-    const matchesCategory =
-      activeCategory === "all" || post.category === activeCategory;
-    return matchesSearch && matchesCategory;
-  });
+  const filteredPosts = useMemo(
+    () =>
+      posts.filter((post) => {
+        const matchesSearch =
+          search === "" ||
+          post.title.toLowerCase().includes(search.toLowerCase()) ||
+          post.description.toLowerCase().includes(search.toLowerCase());
+        const matchesCategory =
+          activeCategory === "all" || post.category === activeCategory;
+        return matchesSearch && matchesCategory;
+      }),
+    [posts, search, activeCategory]
+  );
+
+  const totalPages = Math.max(1, Math.ceil(filteredPosts.length / PAGE_SIZE));
+  const safePage = Math.min(page, totalPages);
+  const pagedPosts = filteredPosts.slice(
+    (safePage - 1) * PAGE_SIZE,
+    safePage * PAGE_SIZE
+  );
+
+  useEffect(() => {
+    setPage(1);
+  }, [search, activeCategory]);
 
   return (
     <div>
@@ -75,11 +93,60 @@ export function BlogSearch({ posts }: { posts: PostMeta[] }) {
       </div>
 
       {filteredPosts.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredPosts.map((post) => (
-            <ArticleCard key={post.slug} post={post} />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {pagedPosts.map((post) => (
+              <ArticleCard key={post.slug} post={post} />
+            ))}
+          </div>
+
+          {totalPages > 1 && (
+            <nav
+              className="mt-10 flex items-center justify-between border-t border-dark-700 pt-6"
+              aria-label="Pagination"
+            >
+              <p className="text-sm text-gray-500">
+                Showing{" "}
+                <span className="text-white font-medium">
+                  {(safePage - 1) * PAGE_SIZE + 1}
+                </span>
+                {"–"}
+                <span className="text-white font-medium">
+                  {Math.min(safePage * PAGE_SIZE, filteredPosts.length)}
+                </span>{" "}
+                of{" "}
+                <span className="text-white font-medium">
+                  {filteredPosts.length}
+                </span>{" "}
+                articles
+              </p>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={safePage === 1}
+                  className="px-3 py-1.5 rounded-md text-sm font-medium border border-dark-700 bg-dark-800 text-gray-300 hover:bg-dark-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  aria-label="Previous page"
+                >
+                  ← Prev
+                </button>
+                <span className="text-sm text-gray-400 px-2">
+                  Page{" "}
+                  <span className="text-white font-medium">{safePage}</span> of{" "}
+                  <span className="text-white font-medium">{totalPages}</span>
+                </span>
+                <button
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={safePage === totalPages}
+                  className="px-3 py-1.5 rounded-md text-sm font-medium border border-dark-700 bg-dark-800 text-gray-300 hover:bg-dark-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  aria-label="Next page"
+                >
+                  Next →
+                </button>
+              </div>
+            </nav>
+          )}
+        </>
       ) : (
         <div className="text-center py-12">
           <p className="text-gray-500">
