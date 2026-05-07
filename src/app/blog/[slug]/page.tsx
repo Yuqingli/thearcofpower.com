@@ -8,11 +8,22 @@ import { CATEGORIES, AUTHORS, SITE_URL } from "@/lib/constants";
 import { formatDate } from "@/lib/utils";
 import { ArticleCard } from "@/components/ArticleCard";
 import { Callout } from "@/components/Callout";
+import { GeoMap, HORMUZ_UAE_PINS } from "@/components/GeoMap";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 import { ShareButtons } from "@/components/ShareButtons";
 
+// Wrap GeoMap so it can be invoked from MDX without needing to import the
+// HORMUZ_UAE_PINS preset. MDX consumers use <HormuzMap caption="..." /> and
+// the preset is bound here instead of being injected as a separate scope value
+// (next-mdx-remote/rsc's `components` map only accepts component values).
+const HormuzMap = ({ caption }: { caption?: string }) => (
+  <GeoMap region="middle-east" pins={HORMUZ_UAE_PINS} caption={caption} />
+);
+
 const mdxComponents = {
   Callout,
+  GeoMap,
+  HormuzMap,
 };
 
 interface Props {
