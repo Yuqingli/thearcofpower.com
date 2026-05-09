@@ -10,6 +10,7 @@ import { ArticleCard } from "@/components/ArticleCard";
 import { Callout } from "@/components/Callout";
 import { GeoMap, HORMUZ_UAE_PINS } from "@/components/GeoMap";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
+import { PolymarketEmbed } from "@/components/PolymarketEmbed";
 import { ShareButtons } from "@/components/ShareButtons";
 
 // Wrap GeoMap so it can be invoked from MDX without needing to import the
@@ -24,6 +25,7 @@ const mdxComponents = {
   Callout,
   GeoMap,
   HormuzMap,
+  PolymarketEmbed,
 };
 
 interface Props {
