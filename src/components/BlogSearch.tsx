@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { PostMeta } from "@/lib/blog";
 import { CATEGORIES, CategorySlug } from "@/lib/constants";
-import { ArticleCard } from "./ArticleCard";
+import { DocketRow } from "./DocketRow";
 
 const PAGE_SIZE = 12;
 
@@ -13,6 +13,19 @@ export function BlogSearch({ posts }: { posts: PostMeta[] }) {
     "all"
   );
   const [page, setPage] = useState(1);
+
+  // FILE numbers derive from the full date-sorted index (newest = highest),
+  // independent of the active filter — a file keeps its number forever.
+  const fileNumbers = useMemo(
+    () =>
+      new Map(
+        posts.map((post, i) => [
+          post.slug,
+          String(posts.length - i).padStart(3, "0"),
+        ])
+      ),
+    [posts]
+  );
 
   const filteredPosts = useMemo(
     () =>
@@ -44,7 +57,7 @@ export function BlogSearch({ posts }: { posts: PostMeta[] }) {
       <div className="flex flex-col sm:flex-row gap-4 mb-8">
         <div className="relative flex-1">
           <svg
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500"
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-dim"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -58,10 +71,10 @@ export function BlogSearch({ posts }: { posts: PostMeta[] }) {
           </svg>
           <input
             type="text"
-            placeholder="Search analysis..."
+            placeholder="SEARCH THE DOCKET…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-dark-700 bg-dark-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-transparent"
+            className="w-full border border-edge-dim bg-paper-doc py-2.5 pl-10 pr-4 font-mono text-xs uppercase tracking-[0.14em] text-ink placeholder:text-ink-dim focus:border-gold-500/60 focus:outline-none focus:ring-1 focus:ring-gold-500/60"
           />
         </div>
       </div>
@@ -69,10 +82,10 @@ export function BlogSearch({ posts }: { posts: PostMeta[] }) {
       <div className="flex flex-wrap gap-2 mb-8">
         <button
           onClick={() => setActiveCategory("all")}
-          className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+          className={`border px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.18em] transition-colors ${
             activeCategory === "all"
-              ? "bg-gold-500 text-dark-900"
-              : "bg-dark-800 text-gray-400 hover:bg-dark-700 border border-dark-700"
+              ? "border-gold-500 bg-gold-500 text-paper"
+              : "border-edge-dim bg-paper-doc text-ink-muted hover:border-gold-500/40 hover:text-gold-500"
           }`}
         >
           All
@@ -81,10 +94,10 @@ export function BlogSearch({ posts }: { posts: PostMeta[] }) {
           <button
             key={slug}
             onClick={() => setActiveCategory(slug as CategorySlug)}
-            className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+            className={`border px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.18em] transition-colors ${
               activeCategory === slug
-                ? "bg-gold-500 text-dark-900"
-                : "bg-dark-800 text-gray-400 hover:bg-dark-700 border border-dark-700"
+                ? "border-gold-500 bg-gold-500 text-paper"
+                : "border-edge-dim bg-paper-doc text-ink-muted hover:border-gold-500/40 hover:text-gold-500"
             }`}
           >
             {cat.name}
@@ -94,51 +107,51 @@ export function BlogSearch({ posts }: { posts: PostMeta[] }) {
 
       {filteredPosts.length > 0 ? (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="border-t border-edge-faint">
             {pagedPosts.map((post) => (
-              <ArticleCard key={post.slug} post={post} />
+              <DocketRow
+                key={post.slug}
+                post={post}
+                fileNo={fileNumbers.get(post.slug) ?? "000"}
+              />
             ))}
           </div>
 
           {totalPages > 1 && (
             <nav
-              className="mt-10 flex items-center justify-between border-t border-dark-700 pt-6"
+              className="mt-10 flex items-center justify-between border-t border-edge-faint pt-6"
               aria-label="Pagination"
             >
-              <p className="text-sm text-gray-500">
+              <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-ink-faint">
                 Showing{" "}
-                <span className="text-white font-medium">
+                <span className="text-ink">
                   {(safePage - 1) * PAGE_SIZE + 1}
                 </span>
                 {"–"}
-                <span className="text-white font-medium">
+                <span className="text-ink">
                   {Math.min(safePage * PAGE_SIZE, filteredPosts.length)}
                 </span>{" "}
-                of{" "}
-                <span className="text-white font-medium">
-                  {filteredPosts.length}
-                </span>{" "}
-                articles
+                of <span className="text-ink">{filteredPosts.length}</span>{" "}
+                files
               </p>
 
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={safePage === 1}
-                  className="px-3 py-1.5 rounded-md text-sm font-medium border border-dark-700 bg-dark-800 text-gray-300 hover:bg-dark-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="border border-edge-dim bg-paper-doc px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-ink-muted transition-colors hover:border-gold-500/40 hover:text-gold-500 disabled:cursor-not-allowed disabled:opacity-40"
                   aria-label="Previous page"
                 >
                   ← Prev
                 </button>
-                <span className="text-sm text-gray-400 px-2">
-                  Page{" "}
-                  <span className="text-white font-medium">{safePage}</span> of{" "}
-                  <span className="text-white font-medium">{totalPages}</span>
+                <span className="px-2 font-mono text-[10px] uppercase tracking-[0.16em] text-ink-faint">
+                  Page <span className="text-ink">{safePage}</span> of{" "}
+                  <span className="text-ink">{totalPages}</span>
                 </span>
                 <button
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={safePage === totalPages}
-                  className="px-3 py-1.5 rounded-md text-sm font-medium border border-dark-700 bg-dark-800 text-gray-300 hover:bg-dark-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="border border-edge-dim bg-paper-doc px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-ink-muted transition-colors hover:border-gold-500/40 hover:text-gold-500 disabled:cursor-not-allowed disabled:opacity-40"
                   aria-label="Next page"
                 >
                   Next →
@@ -148,9 +161,9 @@ export function BlogSearch({ posts }: { posts: PostMeta[] }) {
           )}
         </>
       ) : (
-        <div className="text-center py-12">
-          <p className="text-gray-500">
-            No articles found matching your search.
+        <div className="border border-edge-dim bg-paper-doc py-12 text-center">
+          <p className="font-mono text-xs uppercase tracking-[0.16em] text-ink-faint">
+            No files match this query.
           </p>
         </div>
       )}

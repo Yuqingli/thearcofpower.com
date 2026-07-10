@@ -1,144 +1,173 @@
 import Link from "next/link";
 import { getAllPosts } from "@/lib/blog";
+import { CATEGORIES } from "@/lib/constants";
 import { ArticleCard } from "@/components/ArticleCard";
+import { DocketRow } from "@/components/DocketRow";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
+
+const FOCUS_AREAS: { slug: keyof typeof CATEGORIES; desc: string }[] = [
+  { slug: "geopolitics", desc: "Great power competition, alliances, and the shifting global order" },
+  { slug: "defense", desc: "Military strategy, force posture, and the technology of warfare" },
+  { slug: "economics", desc: "Sanctions, trade wars, resource competition, and economic statecraft" },
+  { slug: "diplomacy", desc: "Treaties, negotiations, institutions, and the art of statecraft" },
+  { slug: "intelligence", desc: "Espionage, covert operations, and the information battlespace" },
+];
+
+/**
+ * Homepage hero headline with the site's single redaction bar. The bar is
+ * purely decorative (aria-hidden) — the full title text remains in the DOM.
+ * This motif appears here and nowhere else.
+ */
+function RedactedTitle({ title }: { title: string }) {
+  const words = title.split(" ");
+  // Insert the bar between words so it reads as one redacted term —
+  // mid-title for long headlines, before the last word for short ones.
+  const idx =
+    words.length < 4
+      ? Math.max(1, words.length - 1)
+      : Math.max(1, Math.floor(words.length * 0.55));
+  return (
+    <>
+      {words.slice(0, idx).join(" ")}{" "}
+      <span className="redaction-bar" aria-hidden="true" />{" "}
+      {words.slice(idx).join(" ")}
+    </>
+  );
+}
 
 export default function HomePage() {
   const posts = getAllPosts();
-  const featuredPosts = posts.slice(0, 6);
+  const total = posts.length;
+  const fileNo = (index: number) => String(total - index).padStart(3, "0");
+
+  const hero = posts[0];
+  const docs = posts.slice(1, 4);
+  const docket = posts.slice(4, 12);
+
+  const heroCode = hero
+    ? `${hero.slug.split("-")[0].toUpperCase()}-${hero.date.slice(0, 4)}`
+    : "ARC-0000";
 
   return (
     <>
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gold-500/10 via-transparent to-transparent" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-amber-900/10 via-transparent to-transparent" />
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-28 md:py-40">
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold-500/10 border border-gold-500/20 text-gold-400 text-sm font-medium mb-6">
-              <span className="w-2 h-2 rounded-full bg-gold-400 animate-pulse" />
-              Geopolitics Analysis
+      {/* Hero — case file for the latest post */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 md:pt-12">
+        {hero ? (
+          <div className="case-file relative p-6 pt-14 sm:p-8 sm:pt-14 md:p-12 md:pt-12">
+            <div className="intel-stamp" aria-hidden="true">
+              Arc // Intel
             </div>
-            <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
-              The Arc of{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold-400 to-amber-300">
-                Power
-              </span>
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-faint">
+              Case file · {heroCode} · Source confidence: High
+            </p>
+            <h1 className="mt-4 max-w-[24ch] font-serif text-3xl leading-[1.15] text-ink-bright md:text-5xl">
+              <Link href={`/blog/${hero.slug}`} className="transition-colors hover:text-gold-400">
+                <RedactedTitle title={hero.title} />
+              </Link>
             </h1>
-            <p className="mt-4 font-serif text-xl md:text-2xl text-gold-400/80 italic">
-              Geopolitics. Power. Consequence.
+            <p className="mt-5 max-w-[56ch] font-serif text-base leading-relaxed text-ink-body md:text-lg">
+              {hero.description}
             </p>
-            <p className="mt-6 text-lg md:text-xl text-gray-400 max-w-2xl">
-              In-depth analysis of global power dynamics, defense strategy, economic statecraft, and diplomatic maneuvering. Understanding the forces that shape the world order.
-            </p>
-            <div className="mt-8 flex flex-col sm:flex-row gap-4">
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+              <Link
+                href={`/blog/${hero.slug}`}
+                className="inline-flex items-center justify-center bg-gold-500 px-5 py-2.5 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-paper transition-colors hover:bg-gold-400"
+              >
+                Open case file →
+              </Link>
               <Link
                 href="/blog"
-                className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-gold-500 hover:bg-gold-600 text-dark-900 font-semibold transition-colors"
+                className="inline-flex items-center justify-center border border-edge px-5 py-2.5 font-mono text-[11px] uppercase tracking-[0.18em] text-ink-muted transition-colors hover:border-gold-500/50 hover:text-gold-500"
               >
-                Read Analysis
-              </Link>
-              <Link
-                href="/about"
-                className="inline-flex items-center justify-center px-6 py-3 rounded-lg border border-gray-600 hover:border-gold-500/50 text-gray-300 hover:text-gold-400 font-semibold transition-colors"
-              >
-                About the Publication
+                View full docket
               </Link>
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Focus Areas */}
-      <section className="bg-dark-950 py-20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="font-serif text-3xl font-bold text-white">Areas of Focus</h2>
-            <p className="mt-3 text-gray-500 max-w-xl mx-auto">
-              Rigorous analysis across the domains that define global power.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {[
-              { name: "Geopolitics", desc: "Great power competition, alliances, and the shifting global order" },
-              { name: "Defense", desc: "Military strategy, force posture, and the technology of warfare" },
-              { name: "Economics", desc: "Sanctions, trade wars, resource competition, and economic statecraft" },
-              { name: "Diplomacy", desc: "Treaties, negotiations, institutions, and the art of statecraft" },
-              { name: "Intelligence", desc: "Espionage, covert operations, and the information battlespace" },
-            ].map((area) => (
-              <div
-                key={area.name}
-                className="p-5 rounded-xl border border-dark-700/50 bg-dark-800 hover:border-gold-500/30 transition-all duration-300"
-              >
-                <h3 className="font-serif font-bold text-gold-400 mb-2">{area.name}</h3>
-                <p className="text-sm text-gray-500">{area.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Latest Articles */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="flex items-center justify-between mb-10">
-          <div>
-            <h2 className="font-serif text-3xl font-bold text-white">Latest Analysis</h2>
-            <p className="mt-2 text-gray-500">
-              Recent dispatches on global power and strategy.
-            </p>
-          </div>
-          <Link
-            href="/blog"
-            className="hidden sm:inline-flex items-center gap-1 text-gold-400 hover:text-gold-300 font-medium transition-colors"
-          >
-            View all
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </Link>
-        </div>
-        {featuredPosts.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredPosts.map((post) => (
-              <ArticleCard key={post.slug} post={post} />
-            ))}
+            {/* Adjacent files */}
+            <div className="mt-10 grid gap-3 md:grid-cols-3">
+              {docs.map((post, i) => (
+                <ArticleCard key={post.slug} post={post} fileNo={fileNo(i + 1)} />
+              ))}
+            </div>
           </div>
         ) : (
-          <div className="text-center py-12 border border-dark-700/50 rounded-xl bg-dark-800">
-            <p className="text-gray-500">Analysis articles coming soon.</p>
+          <div className="case-file p-12 text-center">
+            <p className="font-mono text-xs uppercase tracking-[0.16em] text-ink-faint">
+              No case files on record yet.
+            </p>
           </div>
         )}
       </section>
 
-      {/* Newsletter Section */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
-        <div className="max-w-xl mx-auto">
-          <NewsletterSignup />
+      {/* Areas of Focus — the desks */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
+        <div className="mb-8 flex items-baseline justify-between border-b border-edge-faint pb-4">
+          <h2 className="font-serif text-2xl text-ink-bright md:text-3xl">
+            Areas of Focus
+          </h2>
+          <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-ink-dim">
+            05 Desks
+          </span>
+        </div>
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-3 lg:grid-cols-5">
+          {FOCUS_AREAS.map((area, i) => {
+            const category = CATEGORIES[area.slug];
+            return (
+              <div
+                key={area.slug}
+                className="border border-edge-dim bg-paper-doc p-5 transition-colors hover:border-gold-500/40"
+              >
+                <p className="flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.22em] text-ink-dim">
+                  <span
+                    className={`inline-block h-1.5 w-1.5 ${category.color}`}
+                    aria-hidden="true"
+                  />
+                  Desk {String(i + 1).padStart(2, "0")}
+                </p>
+                <h3 className="mt-3 font-serif text-lg font-bold text-gold-500">
+                  {category.name}
+                </h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-ink-faint">
+                  {area.desc}
+                </p>
+              </div>
+            );
+          })}
         </div>
       </section>
 
-      {/* About Section */}
-      <section className="bg-dark-950 py-20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="font-serif text-3xl font-bold text-white mb-6">About The Arc of Power</h2>
-            <p className="text-lg text-gray-400 mb-4">
-              The Arc of Power examines the forces that shape the global order. Our analysis cuts through noise to reveal the structural dynamics of power -- who holds it, how they wield it, and what comes next.
-            </p>
-            <p className="text-gray-500 mb-8">
-              We bring clarity to complexity. From great power competition to regional flashpoints, from economic warfare to intelligence operations, every analysis is grounded in evidence and strategic logic.
-            </p>
-            <Link
-              href="/about"
-              className="inline-flex items-center gap-1 text-gold-400 hover:text-gold-300 font-medium transition-colors"
-            >
-              Learn more about the publication
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
+      {/* The Docket */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 md:pb-20">
+        <div className="mb-2 flex items-baseline justify-between border-b border-edge-faint pb-4">
+          <h2 className="font-serif text-2xl text-ink-bright md:text-3xl">
+            The Docket
+          </h2>
+          <Link
+            href="/blog"
+            className="font-mono text-[10px] uppercase tracking-[0.22em] text-ink-muted transition-colors hover:text-gold-500"
+          >
+            Full docket →
+          </Link>
+        </div>
+        {docket.length > 0 ? (
+          <div>
+            {docket.map((post, i) => (
+              <DocketRow key={post.slug} post={post} fileNo={fileNo(i + 4)} />
+            ))}
           </div>
+        ) : (
+          <div className="border border-edge-dim bg-paper-doc py-12 text-center">
+            <p className="font-mono text-xs uppercase tracking-[0.16em] text-ink-faint">
+              Docket entries coming soon.
+            </p>
+          </div>
+        )}
+      </section>
+
+      {/* Briefing access */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+        <div className="max-w-xl mx-auto">
+          <NewsletterSignup />
         </div>
       </section>
     </>

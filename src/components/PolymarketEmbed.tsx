@@ -30,14 +30,14 @@ export function PolymarketEmbed({
   const embedUrl = `https://embed.polymarket.com/event.html?id=${encodeURIComponent(slug)}&theme=dark`;
 
   return (
-    <figure className="my-8">
+    <figure className="my-8 border border-edge-dim bg-paper-doc p-2">
       {title ? (
-        <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <p className="mb-2 px-2 pt-1 font-mono text-[10px] uppercase tracking-[0.18em] text-gold-500">
           {title}
         </p>
       ) : null}
       <div
-        className="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900"
+        className="overflow-hidden border border-edge-faint bg-paper-deep"
         style={{ height }}
       >
         <iframe
@@ -49,24 +49,24 @@ export function PolymarketEmbed({
         />
       </div>
       {caption ? (
-        <figcaption className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+        <figcaption className="px-2 pb-1 pt-3 font-mono text-[10px] uppercase tracking-[0.16em] text-ink-faint">
           {caption}{" "}
           <a
             href={eventUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="underline"
+            className="underline hover:text-gold-500 transition-colors"
           >
             View on Polymarket →
           </a>
         </figcaption>
       ) : (
-        <figcaption className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+        <figcaption className="px-2 pb-1 pt-3 font-mono text-[10px] uppercase tracking-[0.16em] text-ink-faint">
           <a
             href={eventUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="underline"
+            className="underline hover:text-gold-500 transition-colors"
           >
             View on Polymarket →
           </a>

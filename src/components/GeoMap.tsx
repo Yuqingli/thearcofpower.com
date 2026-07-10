@@ -30,9 +30,9 @@ const VARIANT_STYLES: Record<NonNullable<MapPin["variant"]>, string> = {
 
 export function GeoMap({ region, pins, caption }: GeoMapProps) {
   return (
-    <figure className="my-6">
+    <figure className="my-8 border border-edge-dim bg-paper-doc p-2">
       <div
-        className={`relative w-full aspect-video rounded-lg border border-slate-700 bg-gradient-to-br ${REGION_BACKGROUND[region]}`}
+        className={`relative w-full aspect-video border border-edge-faint bg-gradient-to-br ${REGION_BACKGROUND[region]}`}
         role="img"
         aria-label={caption ?? `Geopolitical map of ${region}`}
       >
@@ -61,8 +61,8 @@ export function GeoMap({ region, pins, caption }: GeoMapProps) {
         ))}
       </div>
       {caption && (
-        <figcaption className="mt-2 text-xs text-slate-400 text-center italic">
-          {caption}
+        <figcaption className="px-2 pb-1 pt-3 font-mono text-[10px] uppercase tracking-[0.16em] text-ink-faint">
+          Fig. — {caption}
         </figcaption>
       )}
     </figure>
