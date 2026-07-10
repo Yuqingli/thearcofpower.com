@@ -6,7 +6,7 @@
 
 @layer base {
   body {
-    @apply bg-dark-900 text-gray-100 antialiased;
+    @apply bg-paper text-ink antialiased;
   }
 
   ::selection {
@@ -28,37 +28,98 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
+
+  /* AP-1 case-file card: paper-edge border, warm gradient, subtle grain
+     (grain <= 2% opacity, file cards only — never on article bodies). */
+  .case-file {
+    border: 1px solid #3a3220;
+    background-image: repeating-linear-gradient(
+        0deg,
+        rgba(232, 226, 212, 0.02) 0px,
+        rgba(232, 226, 212, 0.02) 1px,
+        transparent 1px,
+        transparent 3px
+      ),
+      linear-gradient(180deg, #14110a, #100d07);
+  }
+
+  /* Rotated dossier stamp — decorative only, always aria-hidden in markup. */
+  .intel-stamp {
+    position: absolute;
+    top: 1rem;
+    right: 1.25rem;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #d4a017;
+    border: 1.5px solid #d4a017;
+    padding: 4px 10px 4px 12px;
+    transform: rotate(4deg);
+    opacity: 0.85;
+  }
+
+  /* The ONE redaction bar — homepage hero headline only. Decorative,
+     aria-hidden; the full headline text remains in the DOM around it. */
+  .redaction-bar {
+    display: inline-block;
+    width: 5.5ch;
+    height: 0.68em;
+    background: #1c1810;
+    border-radius: 2px;
+    vertical-align: baseline;
+    transform: translateY(0.04em);
+    user-select: none;
+  }
 }
 
 html {
   scroll-behavior: smooth;
 }
 
-/* Prose overrides for dark theme */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Prose overrides — calm article core (warm dossier palette, book serif) */
 .prose h1,
 .prose h2,
 .prose h3,
 .prose h4 {
   font-family: Georgia, Cambria, "Times New Roman", Times, serif;
-  @apply text-gray-100;
+  font-weight: 600;
+  @apply text-ink-bright;
 }
 
 .prose a {
-  @apply text-gold-400 hover:text-gold-300 transition-colors;
+  @apply text-gold-500 hover:text-gold-400 transition-colors;
 }
 
 .prose strong {
-  @apply text-gray-100;
+  @apply text-ink;
 }
 
 .prose blockquote {
-  @apply border-gold-500;
+  border-left-width: 2px;
+  @apply border-gold-500 text-ink-quote italic;
 }
 
 /* Code blocks */
 :not(pre) > code {
-  @apply px-1.5 py-0.5 rounded bg-dark-800 text-sm font-mono text-gold-300;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  @apply px-1.5 py-0.5 rounded bg-paper-doc text-sm font-mono text-gold-300;
+  border: 1px solid rgba(232, 226, 212, 0.08);
 }
 
 /* Callout component styling */
@@ -66,4 +127,10 @@ html {
 .prose div[class*="border-l-4"] {
   margin-top: 1.5rem;
   margin-bottom: 1.5rem;
+}
+
+/* Framed figures inside articles (iframes, images) sit flat and quiet */
+.prose iframe {
+  border: 1px solid #2e2816;
+  background: #0f0d08;
 }

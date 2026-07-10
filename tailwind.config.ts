@@ -20,6 +20,7 @@ const config: Config = {
           700: "#92700c",
           800: "#6b5210",
           900: "#4a3810",
+          dim: "#8d7b3a",
         },
         dark: {
           50: "#f8fafc",
@@ -34,6 +35,28 @@ const config: Config = {
           900: "#0a0a0a",
           950: "#050505",
         },
+        // AP-1 "The Dossier" tokens
+        paper: {
+          DEFAULT: "#0b0a07", // warm ground
+          raised: "#0d0c08", // article / calm-core surface
+          doc: "#0f0d08", // doc cards inside a file
+          file: "#14110a", // file-card gradient start
+          deep: "#100d07", // file-card gradient end
+        },
+        edge: {
+          DEFAULT: "#3a3220", // paper edge (primary)
+          dim: "#2e2816", // paper edge (secondary)
+          faint: "#2c2618", // hairlines / nav rules
+        },
+        ink: {
+          DEFAULT: "#e8e2d4",
+          bright: "#f2ecdc",
+          body: "#b9af94",
+          muted: "#b3a98e",
+          faint: "#8d8367",
+          dim: "#7c7358",
+          quote: "#e4dcc6",
+        },
       },
       fontFamily: {
         serif: ["Georgia", "Cambria", '"Times New Roman"', "Times", "serif"],
@@ -45,22 +68,23 @@ const config: Config = {
           "Roboto",
           "sans-serif",
         ],
+        mono: ["ui-monospace", '"SF Mono"', "Menlo", "monospace"],
       },
       typography: {
         DEFAULT: {
           css: {
-            "--tw-prose-headings": "#f5f5f5",
-            "--tw-prose-body": "#d1d5db",
-            "--tw-prose-bold": "#f5f5f5",
-            "--tw-prose-links": "#f59e0b",
-            "--tw-prose-counters": "#9ca3af",
-            "--tw-prose-bullets": "#9ca3af",
-            "--tw-prose-quotes": "#d1d5db",
+            "--tw-prose-headings": "#f2ecdc",
+            "--tw-prose-body": "#b9af94",
+            "--tw-prose-bold": "#e8e2d4",
+            "--tw-prose-links": "#d4a017",
+            "--tw-prose-counters": "#8d8367",
+            "--tw-prose-bullets": "#8d8367",
+            "--tw-prose-quotes": "#e4dcc6",
             "--tw-prose-quote-borders": "#d4a017",
-            "--tw-prose-code": "#f5f5f5",
-            "--tw-prose-hr": "#374151",
-            "--tw-prose-th-borders": "#374151",
-            "--tw-prose-td-borders": "#1f2937",
+            "--tw-prose-code": "#e8e2d4",
+            "--tw-prose-hr": "#2e2816",
+            "--tw-prose-th-borders": "#3a3220",
+            "--tw-prose-td-borders": "#2e2816",
           },
         },
       },

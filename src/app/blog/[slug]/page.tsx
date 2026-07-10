@@ -6,8 +6,8 @@ import remarkGfm from "remark-gfm";
 import { getAllPosts, getPostBySlug, getRelatedPosts } from "@/lib/blog";
 import { CATEGORIES, AUTHORS, SITE_URL } from "@/lib/constants";
 import { formatDate } from "@/lib/utils";
-import { ArticleCard } from "@/components/ArticleCard";
 import { Callout } from "@/components/Callout";
+import { DocketRow } from "@/components/DocketRow";
 import { GeoMap, HORMUZ_UAE_PINS } from "@/components/GeoMap";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 import { PolymarketEmbed } from "@/components/PolymarketEmbed";
@@ -101,6 +101,16 @@ export default function BlogPostPage({ params }: Props) {
     AUTHORS[post.author as keyof typeof AUTHORS] || AUTHORS["arc-editorial"];
   const relatedPosts = getRelatedPosts(post.slug, post.category);
 
+  // FILE numbers for related files — computed at build from the full
+  // date-sorted index (newest = highest), never stored in content.
+  const allPosts = getAllPosts();
+  const fileNumbers = new Map(
+    allPosts.map((p, i) => [
+      p.slug,
+      String(allPosts.length - i).padStart(3, "0"),
+    ])
+  );
+
   const canonicalUrl = `${SITE_URL}/blog/${post.slug}`;
   const wordCount = post.content
     .replace(/[#*\[\]()>`_~\-|]/g, "")
@@ -148,77 +158,61 @@ export default function BlogPostPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <article className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Breadcrumb */}
-        <nav className="mb-8 text-sm text-gray-500">
-          <Link
-            href="/"
-            className="hover:text-gold-400 transition-colors"
-          >
+        <nav className="mb-8 font-mono text-[10px] uppercase tracking-[0.16em] text-ink-dim">
+          <Link href="/" className="hover:text-gold-500 transition-colors">
             Home
           </Link>
-          <span className="mx-2">/</span>
-          <Link
-            href="/blog"
-            className="hover:text-gold-400 transition-colors"
-          >
+          <span className="mx-2" aria-hidden="true">
+            /
+          </span>
+          <Link href="/blog" className="hover:text-gold-500 transition-colors">
             Analysis
           </Link>
-          <span className="mx-2">/</span>
-          <span className="text-gray-300">{post.title}</span>
+          <span className="mx-2" aria-hidden="true">
+            /
+          </span>
+          <span className="normal-case tracking-normal text-ink-faint">
+            {post.title}
+          </span>
         </nav>
 
         {/* Article Header */}
         <header className="mb-10">
-          <div className="flex items-center gap-3 mb-4">
-            <span
-              className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-medium text-white ${category.color}`}
-            >
-              {category.name}
-            </span>
-            <span className="text-sm text-gray-500">
-              {post.readingTime}
-            </span>
-          </div>
-          <h1 className="font-serif text-3xl md:text-4xl font-bold leading-tight text-white">
+          <p className="font-mono text-[11px] uppercase tracking-[0.24em] text-gold-500">
+            Case file · {category.name} · {post.readingTime}
+          </p>
+          <h1 className="mt-4 font-serif text-3xl md:text-4xl font-semibold leading-tight text-ink-bright">
             {post.title}
           </h1>
-          <p className="mt-4 text-lg text-gray-400">
+          <p className="mt-4 font-serif text-lg leading-relaxed text-ink-muted">
             {post.description}
           </p>
-          <div className="mt-6 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gold-500/20 flex items-center justify-center text-gold-400 font-bold text-sm font-serif">
-              AP
-            </div>
-            <div>
-              <p className="text-sm font-medium text-gray-300">{author.name}</p>
-              <p className="text-xs text-gray-500">
-                <time dateTime={post.date}>
-                  {formatDate(post.date)}
-                </time>
-                {post.dateModified && post.dateModified !== post.date && (
-                  <>
-                    {" · "}
-                    <span className="text-gold-400">
-                      Updated{" "}
-                      <time dateTime={post.dateModified}>
-                        {formatDate(post.dateModified)}
-                      </time>
-                    </span>
-                  </>
-                )}
-              </p>
-            </div>
-          </div>
+          <p className="mt-6 font-mono text-[10px] uppercase tracking-[0.18em] text-ink-faint">
+            {author.name} ·{" "}
+            <time dateTime={post.date}>{formatDate(post.date)}</time>
+            {post.dateModified && post.dateModified !== post.date && (
+              <>
+                {" · "}
+                <span className="text-gold-500">
+                  Updated{" "}
+                  <time dateTime={post.dateModified}>
+                    {formatDate(post.dateModified)}
+                  </time>
+                </span>
+              </>
+            )}
+          </p>
         </header>
 
         {/* Share Buttons */}
-        <div className="mb-8 pb-8 border-b border-dark-700/50">
+        <div className="mb-8 pb-8 border-b border-edge-faint">
           <ShareButtons url={canonicalUrl} title={post.title} />
         </div>
 
         {/* Article Content */}
-        <div className="prose prose-lg prose-invert max-w-none prose-headings:font-serif prose-a:text-gold-400 hover:prose-a:text-gold-300 prose-blockquote:border-gold-500 prose-strong:text-gray-100">
+        <div className="prose prose-lg max-w-none font-serif prose-a:text-gold-500 hover:prose-a:text-gold-400 prose-blockquote:border-gold-500">
           <MDXRemote
             source={post.content}
             components={mdxComponents}
@@ -227,18 +221,16 @@ export default function BlogPostPage({ params }: Props) {
         </div>
 
         {/* Author Bio */}
-        <div className="mt-12 p-6 rounded-xl bg-dark-800 border border-dark-700/50">
-          <div className="flex items-start gap-4">
-            <div className="w-14 h-14 rounded-full bg-gold-500/20 flex items-center justify-center text-gold-400 font-bold flex-shrink-0 font-serif">
-              AP
-            </div>
-            <div>
-              <h3 className="font-serif font-bold text-white">About {author.name}</h3>
-              <p className="mt-1 text-sm text-gray-400">
-                {author.bio}
-              </p>
-            </div>
-          </div>
+        <div className="mt-12 border border-edge-dim bg-paper-doc p-6">
+          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-gold-500">
+            The Desk
+          </p>
+          <h3 className="mt-2 font-serif font-bold text-ink-bright">
+            About {author.name}
+          </h3>
+          <p className="mt-1 text-sm leading-relaxed text-ink-muted">
+            {author.bio}
+          </p>
         </div>
 
         {/* Newsletter Signup */}
@@ -249,10 +241,21 @@ export default function BlogPostPage({ params }: Props) {
         {/* Related Articles */}
         {relatedPosts.length > 0 && (
           <div className="mt-12">
-            <h2 className="font-serif text-2xl font-bold text-white mb-6">Related Analysis</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="flex items-baseline justify-between border-b border-edge-faint pb-3">
+              <h2 className="font-serif text-2xl text-ink-bright">
+                Related Files
+              </h2>
+              <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-ink-dim">
+                {category.name}
+              </span>
+            </div>
+            <div>
               {relatedPosts.map((rp) => (
-                <ArticleCard key={rp.slug} post={rp} />
+                <DocketRow
+                  key={rp.slug}
+                  post={rp}
+                  fileNo={fileNumbers.get(rp.slug) ?? "000"}
+                />
               ))}
             </div>
           </div>

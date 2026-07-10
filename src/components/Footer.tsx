@@ -6,7 +6,7 @@ const footerLinks = {
     { href: "/blog", label: "Analysis" },
     { href: "/about", label: "About" },
   ],
-  Categories: [
+  Desks: [
     { href: "/blog", label: "Geopolitics" },
     { href: "/blog", label: "Defense" },
     { href: "/blog", label: "Economics" },
@@ -17,17 +17,17 @@ const footerLinks = {
 
 export function Footer() {
   return (
-    <footer className="border-t border-dark-700/50 bg-dark-950">
+    <footer className="border-t border-edge-dim bg-paper-raised">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="md:col-span-2">
             <Link
               href="/"
-              className="font-serif text-xl font-bold text-white"
+              className="font-serif text-lg font-bold uppercase tracking-[0.06em] text-ink-bright"
             >
-              The Arc of Power
+              The Arc of <span className="text-gold-500">Power</span>
             </Link>
-            <p className="mt-3 text-sm text-gray-500 max-w-md">
+            <p className="mt-3 text-sm text-ink-faint max-w-md leading-relaxed">
               In-depth analysis of global power dynamics, defense strategy, economic statecraft, and diplomatic maneuvering. Understanding the forces that shape the world order.
             </p>
             <div className="flex items-center gap-4 mt-4">
@@ -35,7 +35,7 @@ export function Footer() {
                 href={SOCIAL_LINKS.twitter}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-500 hover:text-gold-400 transition-colors"
+                className="text-ink-faint hover:text-gold-500 transition-colors"
                 aria-label="Follow us on X"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -44,7 +44,7 @@ export function Footer() {
               </a>
               <a
                 href={`mailto:${SOCIAL_LINKS.email}`}
-                className="text-gray-500 hover:text-gold-400 transition-colors"
+                className="text-ink-faint hover:text-gold-500 transition-colors"
                 aria-label="Email us"
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -55,7 +55,7 @@ export function Footer() {
           </div>
           {Object.entries(footerLinks).map(([heading, links]) => (
             <div key={heading}>
-              <h3 className="text-sm font-semibold text-gold-400 uppercase tracking-wider">
+              <h3 className="font-mono text-[10px] font-semibold text-gold-500 uppercase tracking-[0.22em]">
                 {heading}
               </h3>
               <ul className="mt-3 space-y-2">
@@ -63,7 +63,7 @@ export function Footer() {
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="text-sm text-gray-500 hover:text-gold-400 transition-colors"
+                      className="text-sm text-ink-faint hover:text-gold-500 transition-colors"
                     >
                       {link.label}
                     </Link>
@@ -74,9 +74,9 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="mt-10 pt-8 border-t border-dark-700/50">
-          <p className="text-xs text-gray-600 text-center">
-            &copy; {new Date().getFullYear()} The Arc of Power. All rights reserved.
+        <div className="mt-10 pt-8 border-t border-edge-faint">
+          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-dim text-center">
+            &copy; {new Date().getFullYear()} The Arc of Power · All rights reserved
           </p>
         </div>
       </div>

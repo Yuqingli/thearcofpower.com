@@ -44,7 +44,9 @@ export function ShareButtons({ url, title }: ShareButtonsProps) {
 
   return (
     <div className="flex items-center gap-3 flex-wrap">
-      <span className="text-sm text-gray-500 font-medium">Share:</span>
+      <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-dim">
+        Share
+      </span>
       {platforms.map((platform) => (
         <a
           key={platform.name}
@@ -52,7 +54,7 @@ export function ShareButtons({ url, title }: ShareButtonsProps) {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={platform.label}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium text-gray-300 bg-dark-700/60 border border-dark-600/60 hover:text-gold-400 hover:border-gold-500/40 hover:bg-dark-700 transition-all duration-150"
+          className="inline-flex items-center gap-1.5 border border-edge-dim bg-paper-doc px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-ink-muted transition-colors hover:border-gold-500/40 hover:text-gold-500"
         >
           {platform.icon}
           <span>{platform.name}</span>

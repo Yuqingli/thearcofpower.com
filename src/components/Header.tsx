@@ -13,39 +13,31 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-dark-700/50 bg-dark-900/90 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-edge-faint bg-paper/95 backdrop-blur-md">
       <nav className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <Link
-            href="/"
-            className="flex items-center gap-3 group"
-          >
-            <div className="w-8 h-8 rounded bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center">
-              <svg className="w-5 h-5 text-dark-900" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M10 2L2 10l8 8 8-8-8-8zM10 5l5 5-5 5-5-5 5-5z" />
-              </svg>
-            </div>
-            <span className="font-serif text-lg font-bold text-white group-hover:text-gold-400 transition-colors">
-              The Arc of Power
+        <div className="flex items-baseline justify-between h-14">
+          <Link href="/" className="group flex items-baseline gap-2 self-center">
+            <span className="font-serif text-[15px] font-bold uppercase tracking-[0.06em] text-ink-bright transition-colors group-hover:text-ink">
+              The Arc of <span className="text-gold-500">Power</span>
             </span>
           </Link>
 
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-baseline gap-7 self-center">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm font-medium text-gray-400 hover:text-gold-400 transition-colors"
+                className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-muted hover:text-gold-500 transition-colors"
               >
                 {link.label}
               </Link>
             ))}
           </div>
 
-          <div className="flex items-center gap-3 md:hidden">
+          <div className="flex items-center gap-3 self-center md:hidden">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg hover:bg-dark-800 transition-colors text-gray-400"
+              className="p-2 text-ink-muted hover:text-gold-500 transition-colors"
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? (
@@ -62,13 +54,13 @@ export function Header() {
         </div>
 
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-dark-700/50 py-4">
+          <div className="md:hidden border-t border-edge-faint py-4">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className="block py-2 text-sm font-medium text-gray-400 hover:text-gold-400 transition-colors"
+                className="block py-2 font-mono text-[11px] uppercase tracking-[0.2em] text-ink-muted hover:text-gold-500 transition-colors"
               >
                 {link.label}
               </Link>
