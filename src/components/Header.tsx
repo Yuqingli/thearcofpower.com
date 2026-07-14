@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { ThemeToggle } from "./ThemeToggle";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -32,9 +33,11 @@ export function Header() {
                 {link.label}
               </Link>
             ))}
+            <ThemeToggle />
           </div>
 
-          <div className="flex items-center gap-3 self-center md:hidden">
+          <div className="flex items-center gap-1 self-center md:hidden">
+            <ThemeToggle />
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="p-2 text-ink-muted hover:text-gold-500 transition-colors"

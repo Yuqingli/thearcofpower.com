@@ -14,7 +14,7 @@ export function NewsletterSignup() {
         href="https://arcofpower.substack.com"
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex w-full items-center justify-center gap-2 bg-gold-500 px-5 py-2.5 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-paper no-underline transition-colors hover:bg-gold-400"
+        className="inline-flex w-full items-center justify-center gap-2 bg-gold-500 px-5 py-2.5 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-dark-950 no-underline transition-colors hover:bg-gold-400"
       >
         Request briefing access
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

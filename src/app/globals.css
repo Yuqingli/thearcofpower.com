@@ -4,13 +4,65 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
+/* ------------------------------------------------------------------ */
+/*  Theme tokens — light (default) / dark (.dark on <html>)           */
+/*  Values are space-separated RGB channels so Tailwind's             */
+/*  <alpha-value> opacity modifier works (e.g. bg-paper/95).          */
+/* ------------------------------------------------------------------ */
+
+:root {
+  /* Backgrounds — warm parchment */
+  --paper:        249 245 237;
+  --paper-raised: 240 235 224;
+  --paper-doc:    232 227 214;
+  --paper-file:   224 218 206;
+  --paper-deep:   216 210 196;
+
+  /* Borders */
+  --edge:       200 192 172;
+  --edge-dim:   213 205 188;
+  --edge-faint: 221 214 200;
+
+  /* Text — dark warm brown, hierarchy by lightness */
+  --ink:        46  40  24;
+  --ink-bright: 28  24  16;
+  --ink-body:   74  64  48;
+  --ink-muted:  90  80  64;
+  --ink-faint: 138 128 112;
+  --ink-dim:   154 144 128;
+  --ink-quote:  64  56  42;
+}
+
+.dark {
+  /* Backgrounds — warm near-black dossier ground */
+  --paper:         11  10   7;
+  --paper-raised:  13  12   8;
+  --paper-doc:     15  13   8;
+  --paper-file:    20  17  10;
+  --paper-deep:    16  13   7;
+
+  /* Borders */
+  --edge:        58  50  32;
+  --edge-dim:    46  40  22;
+  --edge-faint:  44  38  24;
+
+  /* Text — warm off-white, hierarchy by lightness */
+  --ink:        232 226 212;
+  --ink-bright: 242 236 220;
+  --ink-body:   185 175 148;
+  --ink-muted:  179 169 142;
+  --ink-faint:  141 131 103;
+  --ink-dim:    124 115  88;
+  --ink-quote:  228 220 198;
+}
+
 @layer base {
   body {
     @apply bg-paper text-ink antialiased;
   }
 
   ::selection {
-    @apply bg-gold-500/30 text-gold-100;
+    @apply bg-gold-500/30;
   }
 }
 
@@ -32,15 +84,15 @@
   /* AP-1 case-file card: paper-edge border, warm gradient, subtle grain
      (grain <= 2% opacity, file cards only — never on article bodies). */
   .case-file {
-    border: 1px solid #3a3220;
+    border: 1px solid rgb(var(--edge));
     background-image: repeating-linear-gradient(
         0deg,
-        rgba(232, 226, 212, 0.02) 0px,
-        rgba(232, 226, 212, 0.02) 1px,
+        rgb(var(--ink) / 0.02) 0px,
+        rgb(var(--ink) / 0.02) 1px,
         transparent 1px,
         transparent 3px
       ),
-      linear-gradient(180deg, #14110a, #100d07);
+      linear-gradient(180deg, rgb(var(--paper-file)), rgb(var(--paper-deep)));
   }
 
   /* Rotated dossier stamp — decorative only, always aria-hidden in markup. */
@@ -119,7 +171,7 @@ html {
 /* Code blocks */
 :not(pre) > code {
   @apply px-1.5 py-0.5 rounded bg-paper-doc text-sm font-mono text-gold-300;
-  border: 1px solid rgba(232, 226, 212, 0.08);
+  border: 1px solid rgb(var(--ink) / 0.08);
 }
 
 /* Callout component styling */
@@ -131,6 +183,6 @@ html {
 
 /* Framed figures inside articles (iframes, images) sit flat and quiet */
 .prose iframe {
-  border: 1px solid #2e2816;
-  background: #0f0d08;
+  border: 1px solid rgb(var(--edge-dim));
+  background: rgb(var(--paper-doc));
 }

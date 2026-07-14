@@ -71,7 +71,7 @@ export default function HomePage() {
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
               <Link
                 href={`/blog/${hero.slug}`}
-                className="inline-flex items-center justify-center bg-gold-500 px-5 py-2.5 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-paper transition-colors hover:bg-gold-400"
+                className="inline-flex items-center justify-center bg-gold-500 px-5 py-2.5 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-dark-950 transition-colors hover:bg-gold-400"
               >
                 Open case file →
               </Link>

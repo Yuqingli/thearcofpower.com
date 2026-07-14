@@ -84,7 +84,7 @@ export function BlogSearch({ posts }: { posts: PostMeta[] }) {
           onClick={() => setActiveCategory("all")}
           className={`border px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.18em] transition-colors ${
             activeCategory === "all"
-              ? "border-gold-500 bg-gold-500 text-paper"
+              ? "border-gold-500 bg-gold-500 text-dark-950"
               : "border-edge-dim bg-paper-doc text-ink-muted hover:border-gold-500/40 hover:text-gold-500"
           }`}
         >
@@ -96,7 +96,7 @@ export function BlogSearch({ posts }: { posts: PostMeta[] }) {
             onClick={() => setActiveCategory(slug as CategorySlug)}
             className={`border px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.18em] transition-colors ${
               activeCategory === slug
-                ? "border-gold-500 bg-gold-500 text-paper"
+                ? "border-gold-500 bg-gold-500 text-dark-950"
                 : "border-edge-dim bg-paper-doc text-ink-muted hover:border-gold-500/40 hover:text-gold-500"
             }`}
           >

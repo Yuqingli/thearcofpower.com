@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  darkMode: "class",
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -35,27 +36,28 @@ const config: Config = {
           900: "#0a0a0a",
           950: "#050505",
         },
-        // AP-1 "The Dossier" tokens
+        // Semantic tokens — values come from CSS variables so they
+        // respond to the .dark class on <html>.
         paper: {
-          DEFAULT: "#0b0a07", // warm ground
-          raised: "#0d0c08", // article / calm-core surface
-          doc: "#0f0d08", // doc cards inside a file
-          file: "#14110a", // file-card gradient start
-          deep: "#100d07", // file-card gradient end
+          DEFAULT: "rgb(var(--paper) / <alpha-value>)",
+          raised: "rgb(var(--paper-raised) / <alpha-value>)",
+          doc: "rgb(var(--paper-doc) / <alpha-value>)",
+          file: "rgb(var(--paper-file) / <alpha-value>)",
+          deep: "rgb(var(--paper-deep) / <alpha-value>)",
         },
         edge: {
-          DEFAULT: "#3a3220", // paper edge (primary)
-          dim: "#2e2816", // paper edge (secondary)
-          faint: "#2c2618", // hairlines / nav rules
+          DEFAULT: "rgb(var(--edge) / <alpha-value>)",
+          dim: "rgb(var(--edge-dim) / <alpha-value>)",
+          faint: "rgb(var(--edge-faint) / <alpha-value>)",
         },
         ink: {
-          DEFAULT: "#e8e2d4",
-          bright: "#f2ecdc",
-          body: "#b9af94",
-          muted: "#b3a98e",
-          faint: "#8d8367",
-          dim: "#7c7358",
-          quote: "#e4dcc6",
+          DEFAULT: "rgb(var(--ink) / <alpha-value>)",
+          bright: "rgb(var(--ink-bright) / <alpha-value>)",
+          body: "rgb(var(--ink-body) / <alpha-value>)",
+          muted: "rgb(var(--ink-muted) / <alpha-value>)",
+          faint: "rgb(var(--ink-faint) / <alpha-value>)",
+          dim: "rgb(var(--ink-dim) / <alpha-value>)",
+          quote: "rgb(var(--ink-quote) / <alpha-value>)",
         },
       },
       fontFamily: {
@@ -73,18 +75,18 @@ const config: Config = {
       typography: {
         DEFAULT: {
           css: {
-            "--tw-prose-headings": "#f2ecdc",
-            "--tw-prose-body": "#b9af94",
-            "--tw-prose-bold": "#e8e2d4",
+            "--tw-prose-headings": "rgb(var(--ink-bright))",
+            "--tw-prose-body": "rgb(var(--ink-body))",
+            "--tw-prose-bold": "rgb(var(--ink))",
             "--tw-prose-links": "#d4a017",
-            "--tw-prose-counters": "#8d8367",
-            "--tw-prose-bullets": "#8d8367",
-            "--tw-prose-quotes": "#e4dcc6",
+            "--tw-prose-counters": "rgb(var(--ink-faint))",
+            "--tw-prose-bullets": "rgb(var(--ink-faint))",
+            "--tw-prose-quotes": "rgb(var(--ink-quote))",
             "--tw-prose-quote-borders": "#d4a017",
-            "--tw-prose-code": "#e8e2d4",
-            "--tw-prose-hr": "#2e2816",
-            "--tw-prose-th-borders": "#3a3220",
-            "--tw-prose-td-borders": "#2e2816",
+            "--tw-prose-code": "rgb(var(--ink))",
+            "--tw-prose-hr": "rgb(var(--edge-dim))",
+            "--tw-prose-th-borders": "rgb(var(--edge))",
+            "--tw-prose-td-borders": "rgb(var(--edge-dim))",
           },
         },
       },
