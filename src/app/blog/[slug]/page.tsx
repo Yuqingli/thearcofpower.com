@@ -8,7 +8,7 @@ import { CATEGORIES, AUTHORS, SITE_URL } from "@/lib/constants";
 import { formatDate } from "@/lib/utils";
 import { Callout } from "@/components/Callout";
 import { DocketRow } from "@/components/DocketRow";
-import { GeoMap, HORMUZ_UAE_PINS } from "@/components/GeoMap";
+import { GeoMap, HORMUZ_UAE_PINS, GERMANY_EUROPE_PINS } from "@/components/GeoMap";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 import { PolymarketEmbed } from "@/components/PolymarketEmbed";
 import { ShareButtons } from "@/components/ShareButtons";
@@ -21,9 +21,14 @@ const HormuzMap = ({ caption }: { caption?: string }) => (
   <GeoMap region="middle-east" pins={HORMUZ_UAE_PINS} caption={caption} />
 );
 
+const GermanyEuropeMap = ({ caption }: { caption?: string }) => (
+  <GeoMap region="europe" pins={GERMANY_EUROPE_PINS} caption={caption} />
+);
+
 const mdxComponents = {
   Callout,
   GeoMap,
+  GermanyEuropeMap,
   HormuzMap,
   PolymarketEmbed,
 };
