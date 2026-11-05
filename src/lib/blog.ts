@@ -17,6 +17,7 @@ export interface PostMeta {
   image?: string;
   featured?: boolean;
   readingTime: string;
+  tags: string[];
 }
 
 export interface Post extends PostMeta {
@@ -43,6 +44,7 @@ export function getAllPosts(): PostMeta[] {
         image: data.image,
         featured: data.featured || false,
         readingTime: stats.text,
+        tags: Array.isArray(data.tags) ? data.tags : [],
       };
     })
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -66,6 +68,7 @@ export function getPostBySlug(slug: string): Post | null {
     image: data.image,
     featured: data.featured || false,
     readingTime: stats.text,
+    tags: Array.isArray(data.tags) ? data.tags : [],
     content,
   };
 }
@@ -83,4 +86,41 @@ export function getRelatedPosts(
 
 export function getPostsByCategory(category: CategorySlug): PostMeta[] {
   return getAllPosts().filter((p) => p.category === category);
+}
+
+/** Normalize a tag string to a URL-safe slug. */
+export function tagToSlug(tag: string): string {
+  return tag
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+/** Return all unique tags used across every post, sorted alphabetically. */
+export function getAllTags(): string[] {
+  const tags = new Set<string>();
+  for (const post of getAllPosts()) {
+    for (const tag of post.tags) {
+      tags.add(tag);
+    }
+  }
+  return Array.from(tags).sort((a, b) => a.localeCompare(b));
+}
+
+/** Return posts that carry a given tag (case-insensitive match). */
+export function getPostsByTag(tag: string): PostMeta[] {
+  const lower = tag.toLowerCase();
+  return getAllPosts().filter((p) =>
+    p.tags.some((t) => t.toLowerCase() === lower)
+  );
+}
+
+/** Look up the original-case tag name from a slug. Returns undefined if no match. */
+export function tagFromSlug(slug: string): string | undefined {
+  for (const post of getAllPosts()) {
+    for (const tag of post.tags) {
+      if (tagToSlug(tag) === slug) return tag;
+    }
+  }
+  return undefined;
 }

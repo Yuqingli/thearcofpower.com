@@ -1,5 +1,5 @@
 import { MetadataRoute } from "next";
-import { getAllPosts } from "@/lib/blog";
+import { getAllPosts, getAllTags, tagToSlug } from "@/lib/blog";
 import { SITE_URL } from "@/lib/constants";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -10,9 +10,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
+  const tagPages = getAllTags().map((tag) => ({
+    url: `${SITE_URL}/tags/${tagToSlug(tag)}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly" as const,
+    priority: 0.6,
+  }));
+
   const staticPages = [
     { url: `${SITE_URL}`, priority: 1.0 },
     { url: `${SITE_URL}/blog`, priority: 0.9 },
+    { url: `${SITE_URL}/tags`, priority: 0.7 },
     { url: `${SITE_URL}/about`, priority: 0.7 },
   ].map((page) => ({
     ...page,
@@ -20,5 +28,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "monthly" as const,
   }));
 
-  return [...staticPages, ...posts];
+  return [...staticPages, ...posts, ...tagPages];
 }
