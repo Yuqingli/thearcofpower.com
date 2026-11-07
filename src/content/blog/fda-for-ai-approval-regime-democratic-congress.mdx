@@ -1,0 +1,124 @@
+---
+title: "FDA-for-AI: The Regime Congress Just Made Plausible"
+description: "A Democratic Congress can now build a pre-market approval regime for frontier AI. The winners write compliance. The losers train models in 68 hours."
+date: "2026-11-06"
+category: "geopolitics"
+author: "The Arc of Power"
+featured: true
+image: "/blog/fda-for-ai-approval-regime-democratic-congress-hero.jpg"
+tags: ["AI Infrastructure Politics", "AI Regulation", "Congress", "FDA for AI", "Frontier Models", "Antitrust", "Open Source AI", "Meta", "Mark Cuban", "Midterm Elections", "2026"]
+---
+
+<img src="/blog/fda-for-ai-approval-regime-democratic-congress-hero.jpg" alt="An editorial illustration of a massive government approval seal with circuit board and neural network motifs stamped onto a frontier AI model, the US Capitol in the background" style={{width: '100%', maxWidth: '900px', borderRadius: '12px', marginTop: '1rem', marginBottom: '1.5rem'}} />
+
+Two days ago, this column covered the [midterm that repriced AI capex](/blog/midterm-repriced-ai-capex) — the ballot measures, the Texas flip, the overnight markdown on data center stocks. That was the market story. This is the power story.
+
+On November 3, Democrats swept both chambers of Congress. When the 120th Congress convenes in January 2027, Senator Maria Cantwell will likely [chair the Senate Commerce Committee](https://rollcall.com/2026/10/07/sen-maria-cantwell-looks-to-federal-testing-role-in-ai-safety-framework/) — and with that gavel comes subpoena power, hearing calendars, and the committee markup authority to advance a piece of legislation that has been circulating in draft form since July: a federal pre-market approval regime for frontier AI models. An [FDA-for-AI](https://arxiv.org/html/2408.00821v1).
+
+This is not a metaphor. The FRONTIER Act ([H.R. 9925](https://www.congress.gov/bill/119th-congress/house-bill/9925/text)), introduced on July 23, 2026, creates a Commerce Department undersecretary with the power to suspend or restrict a frontier model's development or deployment, backed by penalties of up to $10 million per day for non-compliance. Cantwell's [six-point framework](https://rollcall.com/2026/10/07/sen-maria-cantwell-looks-to-federal-testing-role-in-ai-safety-framework/) goes further: enforceable federal safety standards, independent pre-release audits, continuous monitoring, and mandatory incident reporting. As [Foley & Lardner's analysis](https://www.foley.com/insights/publications/2026/11/blue-wave-new-ai-rules-what-democratic-control-of-congress-means-for-ai-regulation/) put it two days after the election: "Oversight comes first."
+
+<a href="https://x.com/nikitabier/status/2118063901766279549" target="_blank" rel="noopener noreferrer"><img src="/blog/tweet-nikitabier-midterm-irony.png" alt="@nikitabier — The irony of last night's outcome: the party elected to deliver Republican policies did not deliver them" style={{width: '100%', maxWidth: '550px', borderRadius: '12px', border: '1px solid #e0e0e0', marginTop: '1rem', marginBottom: '1rem'}} /></a>
+
+*[View original post on X →](https://x.com/nikitabier/status/2118063901766279549)*
+
+The question is no longer whether Washington will regulate frontier AI. The question is who writes the compliance apparatus — and who that apparatus excludes.
+
+<iframe width="100%" height="400" src="https://www.youtube.com/embed/d986a8Nd0GU" title="Breaking Points — Nate Silver: Trump Era Is OVER" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen style={{borderRadius: '12px', marginTop: '1rem', marginBottom: '2rem'}}></iframe>
+
+## Three Theses on the FDA-for-AI
+
+### Thesis 1: Compliance Is Now a Moat
+
+Every pre-market approval regime in history has the same structural effect: it converts fixed regulatory costs into barriers to entry. The FDA does not intend to favor Pfizer over a biotech startup — but its New Drug Application process costs approximately $2.6 billion per approved drug, which means only firms with that capitalization can play. The FAA does not intend to favor Boeing over garage-shop aircraft builders — but Part 25 certification ensures that only firms with certification teams measured in hundreds can build commercial airliners.
+
+The proposed AI apparatus follows the same architecture. Cantwell's framework requires [independent audits by Commerce experts, National Labs, and the national security apparatus](https://rollcall.com/2026/10/07/sen-maria-cantwell-looks-to-federal-testing-role-in-ai-safety-framework/) — not self-reported safety cards from the companies themselves. The FRONTIER Act defines a covered model as one trained with more than 10^26 operations, which today means roughly any model above GPT-4-class. For a company like Anthropic or Google, this is manageable: they already employ safety teams numbering in the dozens and publish model cards as a matter of course. The incremental cost of federal compliance is a rounding error on a $10 billion training budget.
+
+For everyone else, it is a death sentence.
+
+[Fortune reported in January](https://fortune.com/2026/01/30/americas-ai-regulatory-patchwork-is-crushing-startups-and-helping-china) that the existing state-level patchwork is already an "insurmountable barrier to entry" for AI startups. One founder budgeted $2 million annually just to track and comply with emerging state regulations — before any federal layer existed. A [Harvard Kennedy School paper](https://arxiv.org/html/2408.00821v1) on the FDA-for-AI concept warned that "fixed compliance costs, fees, lengthy reviews, and scarce evaluator capacity favour incumbents." This is not speculation. It is the documented history of every pre-market approval regime the United States has ever built.
+
+<Callout type="info">
+The FRONTIER Act's 10^26 FLOP threshold means the regime would currently cover approximately 10-15 organizations worldwide. That number will shrink as compliance costs rise and the threshold ages. This is exactly what happened with the FDA's orphan drug designation — a threshold designed for rare diseases became a strategic tool for large pharmaceutical companies to secure exclusivity.
+</Callout>
+
+Now consider what happened this week. Thinking Machines Lab [announced Inkling 2 Small](https://thinkingmachines.ai/news/inkling-2-small/) — a 594-billion-parameter mixture-of-experts model with 17 billion active parameters. As co-founder Soumith Chintala [posted on X](https://x.com/soumithchintala/status/2118490925634556026): "The pre-training ran for 68 hours on GB300s." The full model, including post-training with 17 million reinforcement-learning rollouts over nine days, will be released under Apache 2.0. It scores 81.7% on ARC-AGI-2, topping the open-weight leaderboard outside China.
+
+<a href="https://x.com/soumithchintala/status/2118490925634556026" target="_blank" rel="noopener noreferrer"><img src="/blog/tweet-soumith-inkling-68hrs.png" alt="@soumithchintala — Inkling 2 Small: pre-training ran for 68 hours on GB300s, 17 million rollouts over 9 days, entirely pre-mid-post trained in NVFP4" style={{width: '100%', maxWidth: '550px', borderRadius: '12px', border: '1px solid #e0e0e0', marginTop: '1rem', marginBottom: '1rem'}} /></a>
+
+*[View original post on X →](https://x.com/soumithchintala/status/2118490925634556026)*
+
+Sixty-eight hours. Under a pre-market approval regime with even a 30-day review window, the review period would exceed the training period by a factor of ten. For a startup operating on venture capital, that is not a speed bump. It is a wall.
+
+<iframe width="100%" height="400" src="https://www.youtube.com/embed/_QefK2Zp6Fo" title="WSJ — Why the massive AI cash grab could end without warning" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen style={{borderRadius: '12px', marginTop: '1rem', marginBottom: '2rem'}}></iframe>
+
+### Thesis 2: The Meta Hearings Are the First Test Case
+
+If you want to understand what a Democratic Commerce Committee will actually do with its new gavels, look at the target that is already in the crosshairs: Meta's $16 billion fraud-ad economy.
+
+Reuters reported in November 2025 that internal Meta documents projected roughly 10% of the company's 2024 revenue — approximately [$16 billion](https://news.ycombinator.com/item?id=50385870) — came from ads for scams and banned products. A late 2024 internal document valued "higher risk" ads at about $7 billion annually. Users across Meta's apps were seeing an estimated 15 billion such ads per day. Senator Richard Blumenthal [wrote to the FTC](https://www.blumenthal.senate.gov/download/2025-11-22_meta_ad_fraud_profiteering_letter) estimating Meta could be responsible for more than $50 billion in consumer losses.
+
+Mark Cuban has become the public face of this fight. On the Pivot podcast in August, Cuban accused Facebook of [knowingly running AI-generated deepfake scam ads](https://moneywise.com/news/top-stories/mark-cuban-meta-facebook-ai-scam-ads) using his face and voice to sell fake diabetes treatments to elderly users. Some ads, he noted, even carry fine print admitting the person on screen is AI-generated. Cuban called the platform "the worst of the worst."
+
+<a href="https://news.ycombinator.com/item?id=50385870" target="_blank" rel="noopener noreferrer"><img src="/blog/hn-meta-fraud-ads.png" alt="Hacker News thread — Cuban: Facebook knowingly runs AI deepfake scam ads; docs say $16B fraud revenue (503 points, 224 comments)" style={{width: '100%', maxWidth: '700px', borderRadius: '12px', border: '1px solid #e0e0e0', marginTop: '1rem', marginBottom: '1rem'}} /></a>
+
+*[View on Hacker News →](https://news.ycombinator.com/item?id=50385870)*
+
+The top HN comment — "Make advertisers liable for the ads they run" — captures the regulatory logic that a Democratic Congress will likely pursue. Other commenters compared Meta to Big Tobacco: a company that knows its product causes harm, has internal documents proving it, and has calculated that fines cost less than the revenue.
+
+This matters for the FDA-for-AI because it establishes the political predicate. Before you can build a pre-market approval regime, you need a villain — a concrete, documentable case of AI-adjacent harm that makes the regulatory apparatus feel necessary rather than theoretical. The tobacco industry gave the FDA the political capital to regulate cigarettes. The 2008 financial crisis gave the CFPB its mandate. Meta's $16 billion fraud-ad economy, complete with internal documents, Cuban's celebrity testimony, and elderly victims, is the kind of story that turns committee hearings into front-page news and front-page news into legislation.
+
+<Callout type="warning">
+Contrarian Corner: Not everyone believes a Democratic Congress can actually pass an FDA-for-AI. Former White House AI Czar David Sacks called the concept "a disaster for us in the US" at a G20 session, arguing it would create a "DMV for AI" where models wait years for approval while China races ahead. The Senate still requires 60 votes to overcome a filibuster, and Democrats themselves are split — Cantwell wants federal testing, while progressives like Bernie Sanders want to nationalize AI development entirely. Trump retains the veto through January 2029. The most likely outcome may be oversight theater: dramatic hearings and subpoenas that generate political capital without producing binding law.
+</Callout>
+
+### Thesis 3: The Real Regulatory Battle Is Federal vs. State
+
+The least-covered dimension of this fight is the preemption question — and it may matter more than the approval regime itself.
+
+Before the midterms, the Trump administration and its allies in Congress pushed aggressively to [preempt state AI regulation](https://www.transformernews.ai/p/democrats-prepare-to-battle-over-ai-regulation). The argument was clean: AI development crosses state lines, state-by-state rules create compliance chaos, therefore federal law should override. A House Republican bill proposed a 10-year moratorium on state and local AI regulation. A bipartisan draft from Representatives Jay Obernolte and Lori Trahan offered a compromise: block state regulation of AI development for three years while allowing states to regulate AI deployment.
+
+A Democratic Congress flips this calculus. As [Foley & Lardner noted](https://www.foley.com/insights/publications/2026/11/blue-wave-new-ai-rules-what-democratic-control-of-congress-means-for-ai-regulation/), "Democratic proposals generally treat federal rules as a floor rather than a ceiling." That means California's frontier AI transparency law — effective January 1, 2026 — and Colorado's Automated Decision-Making Technology Act — effective January 1, 2027 — remain in force alongside any federal regime. Companies would need to comply with both.
+
+This is where the power dynamics get interesting. A federal-only regime benefits incumbents because they can lobby a single regulator. A federal-floor-plus-state-ceiling regime benefits no one — it creates the compliance patchwork that [Fortune already called](https://fortune.com/2026/01/30/americas-ai-regulatory-patchwork-is-crushing-startups-and-helping-china) a barrier to entry for startups and a gift to China. The open-weight community, which just demonstrated with Inkling 2 Small that frontier-class models can be trained in days rather than months, faces a future where releasing a model requires clearing not one approval process but fifty.
+
+The [IAPP analysis](https://iapp.org/news/a/democratic-midterm-wins-set-stage-for-tougher-tech-and-ai-scrutiny) of the midterm results put it plainly: committee gavels give Democrats "subpoena power, the ability to set hearing agendas, markup authority and control of oversight." Even if no bill passes the filibuster, the hearing calendar alone can reshape the industry. When a Commerce Committee chair can summon any AI CEO to testify under oath about safety incidents within 48 hours — as [House Democratic leaders have already demanded](https://tech-insider.org/democrats-ai-bills-congress-january-trahan-lieu-3-targets-2026/) — the threat of regulation becomes functionally equivalent to regulation itself.
+
+<a href="https://x.com/theallinpod/status/2118054105151111213" target="_blank" rel="noopener noreferrer"><img src="/blog/tweet-allinpod-dillon-sweep.png" alt="@theallinpod — Tim Dillon Explains the Democrat Sweep: economic war disguised as a culture war" style={{width: '100%', maxWidth: '550px', borderRadius: '12px', border: '1px solid #e0e0e0', marginTop: '1rem', marginBottom: '1rem'}} /></a>
+
+*[View original post on X →](https://x.com/theallinpod/status/2118054105151111213)*
+
+## Who Wins, Who Loses
+
+This column has covered [the regulatory capture dynamics of AI policy](/blog/regulatory-capture-trump-ai-cyber-eo-sacks-altman-2026) and the [Bretton Woods moment](/blog/bretton-woods-super-intelligence-white-house-ai-summit) when the White House first convened frontier labs to discuss safety frameworks. The FDA-for-AI is the logical next step — and the power map is clear.
+
+**Winners:**
+- **Incumbent frontier labs** (Anthropic, Google DeepMind, OpenAI) that can absorb compliance costs as overhead. They already employ safety teams, publish model cards, and participate in voluntary testing frameworks. A mandatory regime simply raises the bar their competitors must clear.
+- **Compliance and auditing firms** that will build the testing infrastructure. Cantwell's framework explicitly calls for independent auditors — someone has to be the Deloitte of AI safety.
+- **Defense and national security AI** that operate under existing clearance frameworks. The FRONTIER Act's emergency-suspension power is modeled on defense procurement authority.
+
+**Losers:**
+- **Open-weight challengers** like Thinking Machines, Mistral, and the next lab that trains a frontier model in a garage. If releasing open weights requires federal clearance, the economics of open-source AI invert: the model is free but the license to deploy it is not.
+- **China-based open-weight projects** that cannot submit to US pre-market review. This is either a feature or a bug depending on your threat model.
+- **The "move fast" faction** of Silicon Valley that believed the Trump-era regulatory holiday was permanent. As [Cooley's analysis](https://www.cooley.com/news/coverage/2026/2026-10-28-silicon-valley-braces-for-firestorm-of-dem-scrutiny-in-2027) warned: "Silicon Valley's regulatory holiday is over."
+
+<iframe width="100%" height="400" src="https://www.youtube.com/embed/Ku3hwyd51aw" title="Breaking Points — Bill Gates: 20 years of chaos from AI" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen style={{borderRadius: '12px', marginTop: '1rem', marginBottom: '2rem'}}></iframe>
+
+## The 60-Vote Question
+
+Nothing in this analysis should be mistaken for a prediction that an FDA-for-AI will pass in 2027. The [Senate filibuster remains](https://www.techtimes.com/articles/330158/20261106/democrats-win-senate-lack-60-votes-ai-regulation-cantwell-pushes-federal-model-testing.htm) the binding constraint, and Democrats almost certainly lack 60 votes for comprehensive AI legislation. Trump retains the veto. Industry super PACs have committed over $200 million to fight regulation. Democrats themselves are divided between Cantwell's technocratic testing framework and progressives who want to [nationalize AI development](/blog/nationalize-ai-bernie-50-stake-trump-partnership-polymarket-2026).
+
+But the lesson of the FDA's own history is that you do not need a single comprehensive bill. The Pure Food and Drug Act of 1906 was narrow. The 1938 Federal Food, Drug, and Cosmetic Act expanded it. The Kefauver-Harris Amendment of 1962 added the pre-market efficacy requirement. The modern FDA was built incrementally, one crisis and one hearing at a time, over fifty-six years.
+
+A Democratic Congress cannot pass an FDA-for-AI in 2027. But it can hold the hearings. It can haul Meta's executives before the Commerce Committee with the $16 billion fraud documents. It can subpoena safety incident reports from frontier labs. It can markup the FRONTIER Act and the CLAIM Act and force floor votes that put every senator's position on the record. It can build the political case, crisis by crisis, hearing by hearing, until the question shifts from "Should we regulate frontier AI?" to "How fast can we get the approval process running?"
+
+That is how regulatory regimes are born. Not in a single vote, but in the accumulation of political capital that makes the vote inevitable.
+
+<Callout type="info">
+Polymarket's AI bubble-burst contract prices a 26% chance of a burst by June 2027 — down 5.9% on the day but still a meaningful tail risk. The regulatory overhang from a Democratic Congress is one input into that number. The market is not pricing in an FDA-for-AI. It is pricing in the uncertainty of what a new Congress might do — and uncertainty, for AI capex plans, is almost as damaging as the regulation itself.
+</Callout>
+
+The compute race does not pause for committee hearings. But the [AI capex subsidy fight](/blog/ai-capex-subsidy-fight) we covered in September now has a new variable: a Congress that can condition future subsidies on compliance with safety standards it has not yet written. The companies that recognized this shift on Wednesday morning — when the midterm results came in — are the ones already hiring regulatory affairs teams. The ones that did not are the ones who will be hiring lawyers.
+
+---
+
+*The Arc of Power covers the intersection of technology, geopolitics, and capital. Previous coverage: [The Midterm That Repriced AI Capex](/blog/midterm-repriced-ai-capex), [Regulatory Capture and the AI Cyber EO](/blog/regulatory-capture-trump-ai-cyber-eo-sacks-altman-2026), [California vs. Washington](/blog/california-vs-washington-ai-newsom-polymarket-2026).*
