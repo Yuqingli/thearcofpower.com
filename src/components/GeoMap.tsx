@@ -17,7 +17,7 @@ interface MapPin {
 }
 
 interface GeoMapProps {
-  region: "middle-east" | "europe" | "asia-pacific" | "world";
+  region: "middle-east" | "europe" | "asia-pacific" | "world" | "black-sea-med";
   pins: MapPin[];
   caption?: string;
 }
@@ -31,6 +31,7 @@ const REGION_BACKGROUND: Record<GeoMapProps["region"], string> = {
   europe: "from-slate-900/50 via-slate-800/40 to-slate-950/60",
   "asia-pacific": "from-emerald-950/40 via-slate-900/40 to-slate-950/60",
   world: "from-slate-900/60 via-slate-800/40 to-slate-950/70",
+  "black-sea-med": "from-slate-950/50 via-sky-950/30 to-slate-950/60",
 };
 
 /* ------------------------------------------------------------------ */
@@ -301,6 +302,224 @@ function EuropeBasemap({ highlightCountry }: { highlightCountry?: string }) {
 }
 
 /* ------------------------------------------------------------------ */
+/*  Simplified Black Sea / Mediterranean SVG basemap                   */
+/*  Covers ~5°E–45°E, ~58°N–28°N. Coarse outlines for the naval-      */
+/*  theatre corridor: Baltic (Kaliningrad) → Black Sea → eastern Med.  */
+/* ------------------------------------------------------------------ */
+
+function BlackSeaMedBasemap({
+  highlightCountry,
+}: {
+  highlightCountry?: string;
+}) {
+  const baseStroke = "rgb(var(--edge-dim))";
+  const baseFill = "rgb(var(--paper-deep) / 0.6)";
+  const highlightFill = "rgb(var(--ink-faint) / 0.35)";
+  const accentFill = "#d4a017"; // gold-500
+  const waterFill = "rgb(56 89 120 / 0.35)";
+
+  const fill = (id: string) =>
+    id === highlightCountry ? accentFill : highlightFill;
+
+  /*
+   * Coordinate helpers (not called at render — used to author paths):
+   *   x = (lon - 5) / 40 * 1000
+   *   y = (58 - lat) / 30 * 700
+   * Extent: 5°E → x 0, 45°E → x 1000; 58°N → y 0, 28°N → y 700
+   */
+
+  return (
+    <svg
+      viewBox="0 0 1000 700"
+      xmlns="http://www.w3.org/2000/svg"
+      className="absolute inset-0 w-full h-full"
+      aria-hidden="true"
+      preserveAspectRatio="xMidYMid slice"
+    >
+      <rect width="1000" height="700" fill={baseFill} />
+
+      {/* ---- Water bodies ---- */}
+
+      {/* Black Sea */}
+      <path
+        d="M575,350 L600,315 L650,275 L700,290 L725,315 L775,300 L825,310
+           L875,330 L900,375 L880,397 L775,385 L700,390 L600,397 Z"
+        fill={waterFill}
+        opacity="0.9"
+      />
+
+      {/* Sea of Azov */}
+      <path
+        d="M775,300 L810,280 L830,290 L825,310 L800,310 Z"
+        fill={waterFill}
+        opacity="0.7"
+      />
+
+      {/* Eastern Mediterranean */}
+      <path
+        d="M50,420 L200,440 L350,460 L475,490 L537,445 L525,500
+           L625,502 L775,513 L700,560 L500,600 L300,620
+           L150,610 L50,580 Z"
+        fill={waterFill}
+        opacity="0.7"
+      />
+
+      {/* Aegean Sea */}
+      <path
+        d="M475,390 L537,385 L537,445 L510,470 L475,490 L440,470 Z"
+        fill={waterFill}
+        opacity="0.6"
+      />
+
+      {/* Baltic Sea (southern portion) */}
+      <path
+        d="M325,50 L400,30 L450,50 L475,100 L450,145 L400,160
+           L350,140 L325,100 Z"
+        fill={waterFill}
+        opacity="0.5"
+      />
+
+      {/* ---- Land masses ---- */}
+
+      {/* Italy — southern portion (boot & Sicily) */}
+      <path
+        id="IT"
+        d="M175,340 L225,310 L275,340 L300,380 L325,420 L275,460
+           L225,440 L200,400 Z"
+        fill={fill("IT")}
+        stroke={baseStroke}
+        strokeWidth="1"
+      />
+      {/* Sicily */}
+      <path
+        d="M175,470 L225,455 L262,470 L237,490 L187,490 Z"
+        fill={fill("IT")}
+        stroke={baseStroke}
+        strokeWidth="1"
+      />
+
+      {/* Greece */}
+      <path
+        id="GR"
+        d="M400,380 L450,370 L475,390 L475,440 L440,470 L410,460
+           L390,430 L385,400 Z"
+        fill={fill("GR")}
+        stroke={baseStroke}
+        strokeWidth="1"
+      />
+      {/* Crete */}
+      <path
+        d="M425,500 L475,495 L500,505 L462,515 L425,510 Z"
+        fill={fill("GR")}
+        stroke={baseStroke}
+        strokeWidth="1"
+      />
+
+      {/* Romania + Bulgaria */}
+      <path
+        id="RO"
+        d="M425,245 L500,230 L575,260 L600,315 L575,350 L525,370
+           L475,360 L440,320 L420,280 Z"
+        fill={fill("RO")}
+        stroke={baseStroke}
+        strokeWidth="1"
+      />
+
+      {/* Turkey — Anatolia + European Turkey */}
+      <path
+        id="TR"
+        d="M537,385 L575,350 L600,397 L700,390 L775,385 L880,397
+           L950,445 L775,513 L625,502 L525,500 L537,445 Z"
+        fill={fill("TR")}
+        stroke={baseStroke}
+        strokeWidth="1"
+      />
+
+      {/* Ukraine — southern shape with Crimea notch */}
+      <path
+        id="UA"
+        d="M425,187 L500,163 L625,145 L750,163 L825,200 L800,257
+           L775,275 L775,300 L725,315 L700,290 L650,275 L625,260
+           L575,260 L500,230 L425,245 Z"
+        fill={fill("UA")}
+        stroke={baseStroke}
+        strokeWidth="1.5"
+      />
+
+      {/* Crimea peninsula — part of Ukraine (separately drawn for clarity) */}
+      <path
+        id="CRIMEA"
+        d="M650,275 L700,290 L725,315 L700,330 L665,320 L645,300 Z"
+        fill={fill("CRIMEA")}
+        stroke={baseStroke}
+        strokeWidth="1.5"
+        strokeDasharray="4 2"
+      />
+
+      {/* Russia — western portion visible */}
+      <path
+        id="RU"
+        d="M750,163 L825,120 L925,80 L1000,100 L1000,310 L950,340
+           L900,375 L875,330 L825,310 L810,280 L825,200 Z"
+        fill={fill("RU")}
+        stroke={baseStroke}
+        strokeWidth="1"
+      />
+
+      {/* Kaliningrad exclave (Russia) — small rectangle on Baltic coast */}
+      <path
+        id="KALININGRAD"
+        d="M375,105 L400,98 L410,115 L395,125 L375,120 Z"
+        fill={accentFill}
+        stroke={baseStroke}
+        strokeWidth="1.5"
+        opacity="0.8"
+      />
+
+      {/* Poland (partial — southern Baltic coast) */}
+      <path
+        id="PL"
+        d="M300,120 L375,105 L375,120 L410,115 L425,145 L450,145
+           L475,187 L425,187 L400,210 L350,210 L300,190 L280,160 Z"
+        fill={fill("PL")}
+        stroke={baseStroke}
+        strokeWidth="1"
+      />
+
+      {/* North Africa coast — Libya, Tunisia, Egypt */}
+      <path
+        id="NORTH_AFRICA"
+        d="M50,580 L150,610 L300,620 L500,600 L700,560 L850,580
+           L1000,600 L1000,700 L0,700 L0,580 Z"
+        fill={fill("NORTH_AFRICA")}
+        stroke={baseStroke}
+        strokeWidth="1"
+      />
+
+      {/* Libya label zone — slightly highlighted */}
+      <path
+        id="LY"
+        d="M150,610 L300,620 L350,630 L350,700 L150,700 Z"
+        fill={fill("LY")}
+        stroke={baseStroke}
+        strokeWidth="1"
+        opacity="0.8"
+      />
+
+      {/* Balkans (simplified: Serbia, Croatia, Bosnia, etc.) */}
+      <path
+        id="BALKANS"
+        d="M350,300 L400,280 L425,300 L440,340 L425,370 L400,380
+           L370,370 L350,340 Z"
+        fill={fill("BALKANS")}
+        stroke={baseStroke}
+        strokeWidth="1"
+      />
+    </svg>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /*  GeoMap Component                                                   */
 /* ------------------------------------------------------------------ */
 
@@ -332,9 +551,10 @@ export function GeoMap({ region, pins, caption }: GeoMapProps) {
     [],
   );
 
-  const hasBasemap = region === "europe";
-  const highlightCountry =
-    region === "europe" ? inferHighlightCountry(pins) : undefined;
+  const hasBasemap = region === "europe" || region === "black-sea-med";
+  const highlightCountry = hasBasemap
+    ? inferHighlightCountry(pins)
+    : undefined;
 
   return (
     <figure className="my-8 border border-edge-dim bg-paper-doc p-2">
@@ -349,8 +569,11 @@ export function GeoMap({ region, pins, caption }: GeoMapProps) {
         onTouchEnd={handleContainerClick}
       >
         {/* Render SVG basemap for supported regions */}
-        {hasBasemap && (
+        {region === "europe" && (
           <EuropeBasemap highlightCountry={highlightCountry} />
+        )}
+        {region === "black-sea-med" && (
+          <BlackSeaMedBasemap highlightCountry={highlightCountry} />
         )}
 
         {/* Pin layer */}
@@ -431,6 +654,13 @@ function inferHighlightCountry(pins: MapPin[]): string | undefined {
     italy: "IT",
     ankara: "TR",
     turkey: "TR",
+    crimea: "CRIMEA",
+    sevastopol: "CRIMEA",
+    "black-sea": "UA",
+    kaliningrad: "KALININGRAD",
+    libya: "LY",
+    "libya-strike": "LY",
+    tripoli: "LY",
   };
 
   for (const pin of pins) {
@@ -554,5 +784,35 @@ export const GERMANY_EUROPE_PINS: MapPin[] = [
     variant: "primary",
     detail:
       "EU and NATO HQ. Bruegel estimates the debt-brake reform could lift EU GDP by 0.75% by 2035 — if spending continues.",
+  },
+];
+
+export const BLACK_SEA_MED_PINS: MapPin[] = [
+  {
+    id: "libya-strike",
+    label: "Libya Corvette Strike",
+    x: 25,
+    y: 82,
+    variant: "warning",
+    detail:
+      "Ukrainian naval drones struck a Russian-linked corvette off the Libyan coast — the first confirmed drone strike in the Mediterranean, over 2,000 km from Ukraine's coastline.",
+  },
+  {
+    id: "kaliningrad",
+    label: "Kaliningrad",
+    x: 39,
+    y: 11,
+    variant: "warning",
+    detail:
+      "Russia's Baltic exclave, home to the Baltic Fleet. If naval drones can reach Libya, Kaliningrad's isolation makes it equally vulnerable.",
+  },
+  {
+    id: "black-sea",
+    label: "Black Sea",
+    x: 71,
+    y: 45,
+    variant: "primary",
+    detail:
+      "Primary theatre of Ukraine's naval drone campaign. Over a dozen Russian warships damaged or sunk since 2022, forcing the Black Sea Fleet to retreat from Crimea.",
   },
 ];
